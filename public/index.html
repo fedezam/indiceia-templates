@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>IndiceIA Template Host</title>
+
+  <!-- El host no opina sobre estilos -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+
+  <!-- El renderer decide qué dibujar -->
+  <div id="app"></div>
+
+  <!-- Renderer base -->
+  <script src="../src/renderer.js"></script>
+
+  <script>
+    /**
+     * HOST / NOTARIO MUDO
+     * -------------------
+     * - Escucha mensajes
+     * - Valida estructura mínima
+     * - Entrega datos
+     * - NO modifica
+     * - NO interpreta
+     */
+
+    function isValidBloqueB(data) {
+      return (
+        typeof data === "object" &&
+        data !== null &&
+        typeof data.comercio === "object" &&
+        typeof data.catalogo === "object"
+      );
+    }
+
+    window.addEventListener("message", (event) => {
+      const payload = event.data;
+
+      if (!isValidBloqueB(payload)) {
+        console.warn("[IndiceIA Host] Payload inválido. Ignorado.");
+        return;
+      }
+
+      if (typeof window.renderTemplate !== "function") {
+        console.error("[IndiceIA Host] renderTemplate() no encontrado.");
+        return;
+      }
+
+      // Entrega limpia. Sin tocar.
+      window.renderTemplate(payload);
+    });
+  </script>
+
+</body>
+</html>
