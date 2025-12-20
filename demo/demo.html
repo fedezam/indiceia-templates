@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>IndiceIA – Template Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- CSS del template -->
+  <link rel="stylesheet" href="../src/templates/C1_Napolitana/template.css" />
+
+  <style>
+    /* solo para demo */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, sans-serif;
+      background: #f5f5f5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <div id="app"></div>
+
+  <!-- Renderer core -->
+  <script src="../src/core/productClassifier.js"></script>
+  <script src="../src/core/renderer.js"></script>
+
+  <!-- DEMO BOOTSTRAP -->
+  <script>
+    async function bootstrapDemo() {
+      try {
+        const res = await fetch("./bloqueB.mock.json");
+        const bloqueB = await res.json();
+
+        if (!window.renderBloqueB) {
+          throw new Error("renderer.js no expone renderBloqueB()");
+        }
+
+        const app = document.getElementById("app");
+
+        window.renderBloqueB({
+          data: bloqueB,
+          container: app,
+          templateId: bloqueB.plan.templateId
+        });
+
+      } catch (err) {
+        console.error("❌ Demo error:", err);
+        document.body.innerHTML = `
+          <pre style="color:red;padding:20px;">
+            ${err.message}
+          </pre>
+        `;
+      }
+    }
+
+    bootstrapDemo();
+  </script>
+
+</body>
+</html>
