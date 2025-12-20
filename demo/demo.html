@@ -9,21 +9,29 @@
   <link rel="stylesheet" href="../src/templates/C1_Napolitana/template.css" />
 
   <style>
-    /* solo para demo */
+    /* Solo para demo */
     body {
       margin: 0;
       padding: 0;
       font-family: system-ui, sans-serif;
       background: #f5f5f5;
     }
+
+    #app {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 16px;
+    }
   </style>
 </head>
 <body>
 
   <!-- CONTENEDOR PRINCIPAL -->
-  <div id="app"></div>
+  <div id="app">
+    <p style="opacity:.6">Cargando demo…</p>
+  </div>
 
-  <!-- Renderer core -->
+  <!-- CORE -->
   <script src="../src/core/productClassifier.js"></script>
   <script src="../src/core/renderer.js"></script>
 
@@ -32,13 +40,19 @@
     async function bootstrapDemo() {
       try {
         const res = await fetch("./bloqueB.mock.json");
+
+        if (!res.ok) {
+          throw new Error("No se pudo cargar bloqueB.mock.json");
+        }
+
         const bloqueB = await res.json();
 
-        if (!window.renderBloqueB) {
+        if (typeof window.renderBloqueB !== "function") {
           throw new Error("renderer.js no expone renderBloqueB()");
         }
 
         const app = document.getElementById("app");
+        app.innerHTML = ""; // limpia placeholder
 
         window.renderBloqueB({
           data: bloqueB,
@@ -46,11 +60,15 @@
           templateId: bloqueB.plan.templateId
         });
 
+        console.log("✅ Demo renderizada correctamente");
+
       } catch (err) {
         console.error("❌ Demo error:", err);
         document.body.innerHTML = `
-          <pre style="color:red;padding:20px;">
-            ${err.message}
+          <pre style="color:red;padding:20px;white-space:pre-wrap;">
+❌ Error en demo
+
+${err.message}
           </pre>
         `;
       }
@@ -61,3 +79,4 @@
 
 </body>
 </html>
+
