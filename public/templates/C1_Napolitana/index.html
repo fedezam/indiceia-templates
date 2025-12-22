@@ -8,8 +8,9 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
-    body { margin: 0; font-family: system-ui; }
+    body { margin: 0; font-family: system-ui, sans-serif; }
   </style>
 </head>
 <body>
@@ -17,7 +18,7 @@
     <div class="flex items-center justify-center h-screen bg-gray-100">
       <div class="text-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto"></div>
-        <p class="mt-4 text-slate-600">Cargando menú...</p>
+        <p class="mt-4 text-slate-600 text-sm">Cargando menú...</p>
       </div>
     </div>
   </div>
@@ -25,9 +26,8 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    const C1_Napolitana = () => {
+    const MenuSimple = () => {
       const [data, setData] = useState(null);
-      const [activeTab, setActiveTab] = useState(null);
       const [cart, setCart] = useState([]);
       const [showCart, setShowCart] = useState(false);
       const [toast, setToast] = useState(null);
@@ -41,7 +41,7 @@
           }
         };
         window.addEventListener('message', handler);
-        // Avisar que estamos listos
+        // Handshake: avisamos que estamos listos
         window.parent.postMessage({ type: 'TEMPLATE_READY' }, '*');
         return () => window.removeEventListener('message', handler);
       }, []);
@@ -51,33 +51,40 @@
       const { identity = {}, contacto = {}, catalogo = {} } = data;
       const nombreComercio = identity.nombre_comercio || 'Comercio';
       const whatsappNumber = contacto.whatsapp_number || '';
-      const categorias = catalogo.categorias || [];
-      const items = catalogo.items || [];
+      const seccionesRaw = catalogo.secciones || [];
 
-      useEffect(() => {
-        if (categorias.length > 0 && !activeTab) {
-          setActiveTab(categorias[0]);
-        }
-      }, [categorias]);
+      // Ordenar secciones por prioridad y filtrar vacías
+      const secciones = seccionesRaw
+        .filter(s => s.items && s.items.length > 0)
+        .sort((a, b) => (a.prioridad || 99) - (b.prioridad || 99));
+
+      // Si no hay secciones, mostrar mensaje amable
+      if (secciones.length === 0) {
+        return (
+          <div class="flex items-center justify-center h-screen bg-gray-50">
+            <p class="text-slate-600">No hay productos disponibles en este momento.</p>
+          </div>
+        );
+      }
 
       const addToCart = (item, size = null) => {
-        const precio = size 
-          ? (size === 'mediana' ? item.precio_mediana : item.precio_grande) 
+        const precio = size
+          ? (size === 'mediana' ? item.precio_mediana : item.precio_grande)
           : item.precio || 0;
-        
+
         const newItem = {
           ...item,
           size,
           precio,
           cartId: Date.now() + Math.random()
         };
-        
+
         setCart([...cart, newItem]);
-        
+
         const sizeText = size ? ` (${size.charAt(0).toUpperCase() + size.slice(1)})` : '';
         setToast(`✓ ${item.nombre}${sizeText} agregado`);
         setTimeout(() => setToast(null), 2000);
-        
+
         setCartBounce(true);
         setTimeout(() => setCartBounce(false), 500);
       };
@@ -89,115 +96,163 @@
       const getTotal = () => cart.reduce((sum, i) => sum + i.precio, 0);
 
       const generateWhatsAppMessage = () => {
-        let mensaje = `Hola! Vengo de INDICEIA\n\nMI PEDIDO:\n\n`;
+        let mensaje = `Hola! Vengo de INDICEIA - ${nombreComercio}\n\nMI PEDIDO:\n\n`;
         cart.forEach(item => {
           const sizeText = item.size ? ` (${item.size.charAt(0).toUpperCase() + item.size.slice(1)})` : '';
           mensaje += `• ${item.nombre}${sizeText} [${item.id}] - $${item.precio.toLocaleString()}\n`;
         });
-        mensaje += `\nTOTAL: $${getTotal().toLocaleString()}\n\nEspero tu confirmación!`;
+        mensaje += `\nTOTAL: $${getTotal().toLocaleString()}\n\nGracias!`;
         return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensaje)}`;
       };
 
       const totalItems = cart.length;
-      const itemsActivos = items.filter(item => item.categoria === activeTab);
 
       return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100">
           {/* Toast */}
           {toast && (
-            <div className="fixed top-24 left-1/2 -translate-x-1/2 bg-slate-700 text-white px-3 py-2 rounded-lg shadow-xl z-50 text-xs font-semibold">
+            <div className="fixed top-24 left-1/2 -translate-x-1/2 bg-slate-700 text-white px-4 py-2 rounded-lg shadow-xl z-50 text-sm font-semibold">
               {toast}
             </div>
           )}
-          
-          {/* Header */}
+
+          {/* Header fijo */}
           <div className="sticky top-0 z-40 bg-slate-800 text-white shadow-lg">
-            <div className="px-3 py-1.5 flex justify-between items-center">
-              <h1 className="text-sm font-bold">{nombreComercio}</h1>
-              <button 
+            <div className="px-4 py-3 flex justify-between items-center">
+              <h1 className="text-lg font-bold">{nombreComercio}</h1>
+              <button
                 onClick={() => setShowCart(true)}
-                className={`relative bg-amber-600 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 transition-transform ${cartBounce ? 'scale-125' : ''}`}
+                className={`relative bg-amber-600 px-4 py-2 rounded-full font-bold flex items-center gap-2 transition-transform ${cartBounce ? 'scale-110' : ''}`}
               >
-                <lucide-react.ShoppingCart size={14} />
+                <lucide.icons.shoppingCart size={18} />
                 <span>{totalItems}</span>
+                {totalItems > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{totalItems}</span>}
               </button>
             </div>
-            <div className="flex overflow-x-auto bg-slate-700">
-              {categorias.map(cat => (
-                <button
-                  key={cat}
-                  onClick={() => setActiveTab(cat)}
-                  className={`px-3 py-2 text-xs font-semibold whitespace-nowrap transition-all ${
-                    activeTab === cat ? 'bg-white text-slate-800' : 'text-white hover:bg-slate-600'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-          </div>
 
-          {/* Grid */}
-          <div className="p-2 pb-32">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 max-w-7xl mx-auto">
-              {itemsActivos.map(item => (
-                <div key={item.id} className="bg-white rounded-xl shadow-lg overflow-hidden">
-                  <div className="relative h-40 bg-gray-200">
-                    <img 
-                      src={item.image_url || 'https://via.placeholder.com/800x600?text=Sin+Imagen'}
-                      alt={item.nombre}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute top-2 right-2 bg-slate-800 text-white px-2 py-0.5 rounded-full text-xs">
-                      {item.id}
-                    </div>
-                  </div>
-                  <div className="p-2">
-                    <h3 className="font-bold text-sm mb-2">{item.nombre}</h3>
-                    {item.precio_mediana && item.precio_grande ? (
-                      <>
-                        <div className="flex justify-between items-center bg-amber-50 p-2 rounded-lg mb-1">
-                          <span className="text-xs">Mediana</span>
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-sm text-amber-600">${item.precio_mediana.toLocaleString()}</span>
-                            <button onClick={() => addToCart(item, 'mediana')} className="bg-amber-600 text-white p-1.5 rounded">
-                              <lucide-react.Plus size={16} />
-                            </button>
-                          </div>
-                        </div>
-                        <div className="flex justify-between items-center bg-amber-50 p-2 rounded-lg">
-                          <span className="text-xs">Grande</span>
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-sm text-amber-600">${item.precio_grande.toLocaleString()}</span>
-                            <button onClick={() => addToCart(item, 'grande')} className="bg-amber-600 text-white p-1.5 rounded">
-                              <lucide-react.Plus size={16} />
-                            </button>
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="flex justify-between items-center bg-amber-50 p-2 rounded-lg">
-                        <span className="font-bold text-sm text-amber-600">${(item.precio || 0).toLocaleString()}</span>
-                        <button onClick={() => addToCart(item)} className="bg-amber-600 text-white px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1">
-                          <lucide-react.Plus size={14} />
-                          Agregar
-                        </button>
-                      </div>
-                    )}
-                  </div>
+            {/* Tabs de secciones */}
+            <div className="flex overflow-x-auto scrollbar-hide bg-slate-700">
+              {secciones.map(seccion => (
+                <div key={seccion.id} className="px-4 py-2 text-center whitespace-nowrap">
+                  <p className="text-sm font-semibold">{seccion.titulo || seccion.id}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Carrito modal (mismo código que tenías, lo mantengo) */}
-          {/* ... (pongo el carrito completo igual que en tu component.jsx) ... */}
+          {/* Contenido: todas las secciones una debajo de la otra */}
+          <div className="p-4 pb-32 space-y-8">
+            {secciones.map(seccion => (
+              <section key={seccion.id}>
+                <h2 className="text-xl font-bold text-slate-800 mb-4 text-center">
+                  {seccion.titulo || seccion.id}
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {seccion.items.map(item => (
+                    <div key={item.id} className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
+                      <div className="relative h-48 bg-gray-200">
+                        <img
+                          src={item.imagen || item.image_url || 'https://via.placeholder.com/600x400?text=Sin+Imagen'}
+                          alt={item.nombre}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-2 right-2 bg-slate-800 text-white px-2 py-1 rounded text-xs font-bold">
+                          {item.id}
+                        </div>
+                      </div>
+                      <div className="p-4 flex flex-col flex-grow">
+                        <h3 className="font-bold text-lg mb-2 text-slate-800">{item.nombre}</h3>
+                        {item.descripcion && <p className="text-sm text-slate-600 mb-3 flex-grow">{item.descripcion}</p>}
 
+                        {/* Precios */}
+                        {item.precio_mediana && item.precio_grande ? (
+                          <div className="space-y-2 mt-auto">
+                            <div className="flex justify-between items-center bg-amber-50 p-3 rounded-lg">
+                              <div>
+                                <p className="text-sm font-semibold">Mediana</p>
+                                <p className="text-amber-600 font-bold">${item.precio_mediana.toLocaleString()}</p>
+                              </div>
+                              <button onClick={() => addToCart(item, 'mediana')} className="bg-amber-600 text-white p-2 rounded-full hover:bg-amber-700">
+                                <lucide.icons.plus size={20} />
+                              </button>
+                            </div>
+                            <div className="flex justify-between items-center bg-amber-50 p-3 rounded-lg">
+                              <div>
+                                <p className="text-sm font-semibold">Grande</p>
+                                <p className="text-amber-600 font-bold">${item.precio_grande.toLocaleString()}</p>
+                              </div>
+                              <button onClick={() => addToCart(item, 'grande')} className="bg-amber-600 text-white p-2 rounded-full hover:bg-amber-700">
+                                <lucide.icons.plus size={20} />
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex justify-between items-center bg-amber-50 p-3 rounded-lg mt-auto">
+                            <p className="text-amber-600 font-bold text-xl">${(item.precio || 0).toLocaleString()}</p>
+                            <button onClick={() => addToCart(item)} className="bg-amber-600 text-white px-6 py-3 rounded-lg font-bold flex items-center gap-2 hover:bg-amber-700">
+                              <lucide.icons.plus size={20} />
+                              Agregar
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+
+          {/* Carrito Modal */}
+          {showCart && totalItems > 0 && (
+            <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-end" onClick={() => setShowCart(false)}>
+              <div className="bg-white w-full rounded-t-3xl shadow-2xl max-h-96 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                <div className="sticky top-0 bg-slate-800 text-white p-4 flex justify-between items-center rounded-t-3xl">
+                  <h2 className="font-bold text-lg flex items-center gap-2">
+                    <lucide.icons.shoppingCart size={20} />
+                    Tu Pedido ({totalItems})
+                  </h2>
+                  <button onClick={() => setShowCart(false)} className="text-white text-2xl">×</button>
+                </div>
+                <div className="p-4 space-y-3">
+                  {cart.map(item => (
+                    <div key={item.cartId} className="flex justify-between items-center bg-slate-50 p-3 rounded-lg">
+                      <div className="flex-1">
+                        <p className="font-bold text-slate-800">{item.nombre}</p>
+                        {item.size && <p className="text-sm text-slate-600">({item.size})</p>}
+                        <p className="text-xs text-slate-500">[{item.id}]</p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="font-bold text-amber-600">${item.precio.toLocaleString()}</span>
+                        <button onClick={() => removeFromCart(item.cartId)} className="text-red-600 p-1">
+                          <lucide.icons.trash2 size={18} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="border-t-2 pt-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="font-bold text-xl text-slate-800">TOTAL</span>
+                      <span className="font-bold text-2xl text-amber-600">${getTotal().toLocaleString()}</span>
+                    </div>
+                    <a
+                      href={generateWhatsAppMessage()}
+                      target="_blank"
+                      className="w-full bg-green-600 text-white py-4 rounded-lg font-bold text-lg flex items-center justify-center gap-3 hover:bg-green-700"
+                    >
+                      <lucide.icons.send size={24} />
+                      Enviar pedido por WhatsApp
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       );
     };
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<C1_Napolitana />);
+    ReactDOM.createRoot(document.getElementById('root')).render(<MenuSimple />);
   </script>
   <script>
     lucide.createIcons();
