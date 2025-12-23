@@ -1,0 +1,35 @@
+{
+  "template_id": "C1_SimpleCatalog",
+  "version": "1.0.0",
+  "tier": "C1",
+  "type": "visual_catalog",
+  "checkout": "whatsapp",
+  "data_source": "bloque_B",
+  "supports": {
+    "categories": true,
+    "cart": true,
+    "single_image_per_item": true,
+    "multiple_prices": true
+  },
+  "ideal_for": [
+    "pizzerias",
+    "restaurantes",
+    "cafeterias",
+    "panaderias",
+    "bares",
+    "heladerias",
+    "comercios con catálogo simple"
+  ],
+  "requirements": {
+    "whatsapp_number": "obligatorio",
+    "catalogo.categorias": "obligatorio",
+    "catalogo.items": "obligatorio"
+  },
+  "limitations": [
+    "no variantes complejas",
+    "no búsqueda",
+    "no filtros avanzados",
+    "1 imagen por producto"
+  ],
+  "license": "IndiceIA Commercial Template"
+}
