@@ -1,18 +1,20 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Preview: C1_SimpleCatalog - Pizzería Napolitana</title>
+  <!-- React y ReactDOM (CDN production) -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <!-- Lucide icons (los usás en tu componente) -->
-  <script src="https://unpkg.com/lucide-react@latest/dist/umd/lucide.min.js"></script>
-  <!-- Tu componente real (subido a templates/) -->
-  <script type="text/babel" src="https://indiceia-templates.vercel.app/templates/C1_SimpleCatalog/component.jsx"></script>
+  <!-- Lucide icons (usados en tu componente) -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <!-- Tailwind CSS para que el componente se vea exactamente como en producción -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { margin: 0; font-family: system-ui, sans-serif; background: #f8f9fa; }
+    body { margin: 0; background: #f1f5f9; font-family: system-ui, sans-serif; }
     #root { min-height: 100vh; }
   </style>
 </head>
@@ -20,33 +22,19 @@
   <div id="root"></div>
 
   <script type="text/babel">
-    // Datos fake REALISTAS según tu schema (Bloque B)
+    // Tu componente real (cargado desde tu deployment)
+    // Si ya está desplegado en Vercel, cambia la URL si es necesario
+    const C1_SimpleCatalog = window.C1_SimpleCatalog || (() => <div>Error: Componente no cargado</div>);
+
+    // Datos fake REALISTAS + IMÁGENES DE ALTA CALIDAD (libres para uso comercial/preview)
     const fakeBloqueB = {
       identity: {
         nombre_comercio: "Pizzería Napolitana",
-        descripcion: "La mejor pizza artesanal de Casilda. ¡Masas finas y ingredientes frescos!",
+        descripcion: "Pizza artesanal con ingredientes frescos. ¡La mejor de Casilda!",
         categorias: ["Pizzas", "Empanadas", "Minutas"]
       },
-      ubicacion: {
-        direccion: "Catamarca 1219",
-        ciudad: "Casilda",
-        provincia: "Buenos Aires",
-        pais: "Argentina"
-      },
       contacto: {
-        whatsapp_number: "5493412295316",
-        telefono: "0341 22 95 316",
-        email: "napolitana@casilda.com",
-        instagram: "https://instagram.com/pizzerianapolitana"
-      },
-      horarios: {
-        lunes: { closed: true },
-        martes: { closed: false, morning: { enabled: true, open: "11:00", close: "14:30" }, afternoon: { enabled: true, open: "19:00", close: "23:00" } },
-        miercoles: { closed: false, morning: { enabled: true, open: "11:00", close: "14:30" }, afternoon: { enabled: true, open: "19:00", close: "23:00" } },
-        jueves: { closed: false, morning: { enabled: true, open: "11:00", close: "14:30" }, afternoon: { enabled: true, open: "19:00", close: "23:00" } },
-        viernes: { closed: false, morning: { enabled: true, open: "11:00", close: "14:30" }, afternoon: { enabled: true, open: "19:00", close: "00:30" } },
-        sabado: { closed: false, morning: { enabled: false }, afternoon: { enabled: true, open: "19:00", close: "01:00" } },
-        domingo: { closed: false, morning: { enabled: true, open: "12:00", close: "15:30" }, afternoon: { enabled: true, open: "19:00", close: "23:00" } }
+        whatsapp_number: "5493412295316"
       },
       catalogo: {
         moneda: "ARS",
@@ -57,28 +45,62 @@
             tipo: "grid",
             prioridad: 1,
             items: [
-              { id: "p1", nombre: "Pizza Margherita", precio_final: 8500, imagen: "https://via.placeholder.com/600x400?text=Margherita", categoria: "Pizzas", stock: 20 },
-              { id: "p2", nombre: "Pizza Napolitana", precio_final: 9500, imagen: "https://via.placeholder.com/600x400?text=Napolitana", categoria: "Pizzas", stock: 15 },
-              { id: "p3", nombre: "Empanada de Carne", precio_final: 1200, imagen: "https://via.placeholder.com/600x400?text=Empanada", categoria: "Empanadas", stock: 50 },
-              { id: "p4", nombre: "Fainá", precio_final: 3500, imagen: "https://via.placeholder.com/600x400?text=Faina", categoria: "Minutas", stock: 10 }
+              {
+                id: "p1",
+                nombre: "Pizza Margherita",
+                precio_final: 8500,
+                imagen: "https://images.unsplash.com/photo-1574071318508-1cdbab80fff6?w=800&q=80",
+                categoria: "Pizzas"
+              },
+              {
+                id: "p2",
+                nombre: "Pizza Napolitana",
+                precio_final: 9500,
+                imagen: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&q=80",
+                categoria: "Pizzas"
+              },
+              {
+                id: "p3",
+                nombre: "Pizza Especial",
+                precio_final: 11000,
+                imagen: "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=800&q=80",
+                categoria: "Pizzas"
+              },
+              {
+                id: "e1",
+                nombre: "Empanadas de Carne (docena)",
+                precio_final: 12000,
+                imagen: "https://images.unsplash.com/photo-1626645738306-2427b3d2c6ec?w=800&q=80",
+                categoria: "Empanadas"
+              },
+              {
+                id: "e2",
+                nombre: "Empanadas JyQ",
+                precio_final: 12000,
+                imagen: "https://images.unsplash.com/photo-1639024471283-03518883512d?w=800&q=80",
+                categoria: "Empanadas"
+              },
+              {
+                id: "m1",
+                nombre: "Fainá",
+                precio_final: 3500,
+                imagen: "https://images.unsplash.com/photo-1630430943077-9c3f2b2f3e6e?w=800&q=80",
+                categoria: "Minutas"
+              }
             ]
           }
         ]
-      },
-      pagos: {
-        metodosDisponibles: ["efectivo", "tarjeta_debito", "mercadopago"]
-      },
-      ia: {
-        nombre: "NapoBot",
-        saludo: "¡Hola! ¿Qué pizza te tienta hoy? 🍕"
       }
     };
 
-    // Renderizamos tu componente con los datos fake
+    // Render del componente con datos fake
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(
       <C1_SimpleCatalog entityData={{ bloque_B_contexto_comercial: fakeBloqueB }} />
     );
   </script>
+
+  <!-- Carga tu componente real desde Vercel -->
+  <script type="text/babel" src="https://indiceia-templates.vercel.app/templates/C1_SimpleCatalog/component.jsx"></script>
 </body>
 </html>
