@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Preview: C1_SimpleCatalog - Pizzería Napolitana</title>
+  <title>Preview: C1_SimpleCatalog</title>
 
-  <!-- React -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <!-- React DEV (mejores errores en preview) -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 
-  <!-- Babel standalone (solo para previews) -->
+  <!-- Babel standalone -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <!-- Lucide UMD (NO lucide-react) -->
+  <!-- Lucide UMD -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
   <!-- Tailwind CDN -->
@@ -30,13 +30,11 @@
     </p>
   </div>
 
-  <!-- Datos fake + render -->
+  <!-- Fake data + render -->
   <script type="text/babel">
     const fakeBloqueB = {
       identity: {
-        nombre_comercio: "Pizzería Napolitana",
-        descripcion: "La mejor pizza artesanal de la ciudad",
-        categorias: ["Pizzas", "Empanadas", "Bebidas", "Postres"]
+        nombre_comercio: "Pizzería Napolitana"
       },
       contacto: {
         whatsapp_number: "5493412295316"
@@ -46,12 +44,8 @@
         items: [
           { id: "1", nombre: "Pizza Margherita", precio_final: 8500, imagen: "https://images.unsplash.com/photo-1574071318508-1cdbab80fff6?w=800&q=80", categoria: "Pizzas" },
           { id: "2", nombre: "Pizza Napolitana", precio_final: 9500, imagen: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&q=80", categoria: "Pizzas" },
-          { id: "3", nombre: "Pizza Especial", precio_final: 11000, imagen: "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=800&q=80", categoria: "Pizzas" },
-          { id: "4", nombre: "Empanadas Carne (12u)", precio_final: 12000, imagen: "https://images.unsplash.com/photo-1626645738306-2427b3d2c6ec?w=800&q=80", categoria: "Empanadas" },
-          { id: "5", nombre: "Empanadas JyQ (12u)", precio_final: 12000, imagen: "https://images.unsplash.com/photo-1639024471283-03518883512d?w=800&q=80", categoria: "Empanadas" },
-          { id: "6", nombre: "Fainá", precio_final: 3500, imagen: "https://images.unsplash.com/photo-1630430943077-9c3f2b2f3e6e?w=800&q=80", categoria: "Pizzas" },
-          { id: "7", nombre: "Coca Cola 1.5L", precio_final: 2500, imagen: "https://images.unsplash.com/photo-1622485761324-8248b6c96595?w=800&q=80", categoria: "Bebidas" },
-          { id: "8", nombre: "Flan Casero", precio_final: 4000, imagen: "https://images.unsplash.com/photo-1622621793380-819f25e3e582?w=800&q=80", categoria: "Postres" }
+          { id: "3", nombre: "Empanadas Carne (12u)", precio_final: 12000, imagen: "https://images.unsplash.com/photo-1626645738306-2427b3d2c6ec?w=800&q=80", categoria: "Empanadas" },
+          { id: "4", nombre: "Coca Cola 1.5L", precio_final: 2500, imagen: "https://images.unsplash.com/photo-1622485761324-8248b6c96595?w=800&q=80", categoria: "Bebidas" }
         ]
       }
     };
@@ -65,15 +59,16 @@
           />
         );
       } else {
-        setTimeout(tryRender, 100);
+        setTimeout(tryRender, 50);
       }
     };
 
     tryRender();
   </script>
 
-  <!-- Carga del componente PREVIEW (misma carpeta) -->
+  <!-- COMPONENTE PREVIEW -->
   <script type="text/babel" src="./component.preview.jsx"></script>
 </body>
 </html>
+
 
