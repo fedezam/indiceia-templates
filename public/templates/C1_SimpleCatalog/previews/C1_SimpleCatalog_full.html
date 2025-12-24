@@ -1,37 +1,29 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Preview: C1_SimpleCatalog - Pizzería Napolitana</title>
-  <!-- React y ReactDOM (CDN production) -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <!-- Lucide icons (usados en tu componente) -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-  <!-- Tailwind CSS para que el componente se vea exactamente como en producción -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { margin: 0; background: #f1f5f9; font-family: system-ui, sans-serif; }
+    body { margin: 0; background: #f1f5f9; }
     #root { min-height: 100vh; }
   </style>
 </head>
 <body>
-  <div id="root"></div>
+  <div id="root">Cargando preview...</div>
 
   <script type="text/babel">
-    // Tu componente real (cargado desde tu deployment)
-    // Si ya está desplegado en Vercel, cambia la URL si es necesario
-    const C1_SimpleCatalog = window.C1_SimpleCatalog || (() => <div>Error: Componente no cargado</div>);
-
-    // Datos fake REALISTAS + IMÁGENES DE ALTA CALIDAD (libres para uso comercial/preview)
+    // Datos fake REALISTAS con imágenes apetitosas
     const fakeBloqueB = {
       identity: {
         nombre_comercio: "Pizzería Napolitana",
-        descripcion: "Pizza artesanal con ingredientes frescos. ¡La mejor de Casilda!",
-        categorias: ["Pizzas", "Empanadas", "Minutas"]
+        descripcion: "Pizza artesanal con ingredientes frescos",
+        categorias: ["Pizzas", "Empanadas", "Bebidas", "Postres"]
       },
       contacto: {
         whatsapp_number: "5493412295316"
@@ -41,66 +33,37 @@
         secciones: [
           {
             id: "principal",
-            titulo: "Menú Principal",
+            titulo: "Catálogo",
             tipo: "grid",
             prioridad: 1,
             items: [
-              {
-                id: "p1",
-                nombre: "Pizza Margherita",
-                precio_final: 8500,
-                imagen: "https://images.unsplash.com/photo-1574071318508-1cdbab80fff6?w=800&q=80",
-                categoria: "Pizzas"
-              },
-              {
-                id: "p2",
-                nombre: "Pizza Napolitana",
-                precio_final: 9500,
-                imagen: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&q=80",
-                categoria: "Pizzas"
-              },
-              {
-                id: "p3",
-                nombre: "Pizza Especial",
-                precio_final: 11000,
-                imagen: "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=800&q=80",
-                categoria: "Pizzas"
-              },
-              {
-                id: "e1",
-                nombre: "Empanadas de Carne (docena)",
-                precio_final: 12000,
-                imagen: "https://images.unsplash.com/photo-1626645738306-2427b3d2c6ec?w=800&q=80",
-                categoria: "Empanadas"
-              },
-              {
-                id: "e2",
-                nombre: "Empanadas JyQ",
-                precio_final: 12000,
-                imagen: "https://images.unsplash.com/photo-1639024471283-03518883512d?w=800&q=80",
-                categoria: "Empanadas"
-              },
-              {
-                id: "m1",
-                nombre: "Fainá",
-                precio_final: 3500,
-                imagen: "https://images.unsplash.com/photo-1630430943077-9c3f2b2f3e6e?w=800&q=80",
-                categoria: "Minutas"
-              }
+              { id: "1", nombre: "Pizza Margherita", precio_final: 8500, imagen: "https://images.unsplash.com/photo-1574071318508-1cdbab80fff6?w=800&q=80", categoria: "Pizzas" },
+              { id: "2", nombre: "Pizza Napolitana", precio_final: 9500, imagen: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&q=80", categoria: "Pizzas" },
+              { id: "3", nombre: "Pizza Especial", precio_final: 11000, imagen: "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=800&q=80", categoria: "Pizzas" },
+              { id: "4", nombre: "Empanadas Carne (12u)", precio_final: 12000, imagen: "https://images.unsplash.com/photo-1626645738306-2427b3d2c6ec?w=800&q=80", categoria: "Empanadas" },
+              { id: "5", nombre: "Empanadas JyQ (12u)", precio_final: 12000, imagen: "https://images.unsplash.com/photo-1639024471283-03518883512d?w=800&q=80", categoria: "Empanadas" },
+              { id: "6", nombre: "Fainá", precio_final: 3500, imagen: "https://images.unsplash.com/photo-1630430943077-9c3f2b2f3e6e?w=800&q=80", categoria: "Bebidas" },
+              { id: "7", nombre: "Coca Cola 1.5L", precio_final: 2500, imagen: "https://images.unsplash.com/photo-1622485761324-8248b6c96595?w=800&q=80", categoria: "Bebidas" },
+              { id: "8", nombre: "Flan Casero", precio_final: 4000, imagen: "https://images.unsplash.com/photo-1622621793380-819f25e3e582?w=800&q=80", categoria: "Postres" }
             ]
           }
         ]
       }
     };
 
-    // Render del componente con datos fake
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(
-      <C1_SimpleCatalog entityData={{ bloque_B_contexto_comercial: fakeBloqueB }} />
-    );
+    // Render con espera para que el componente global cargue
+    const render = () => {
+      if (window.C1_SimpleCatalog) {
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<window.C1_SimpleCatalog entityData={{ bloque_B_contexto_comercial: fakeBloqueB }} />);
+      } else {
+        setTimeout(render, 100);
+      }
+    };
+    render();
   </script>
 
-  <!-- Carga tu componente real desde Vercel -->
-  <script type="text/babel" src="https://indiceia-templates.vercel.app/templates/C1_SimpleCatalog/component.jsx"></script>
+  <!-- Carga el componente (ruta relativa) -->
+  <script type="text/babel" src="../component.jsx"></script>
 </body>
 </html>
