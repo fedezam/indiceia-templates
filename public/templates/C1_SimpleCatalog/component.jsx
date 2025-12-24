@@ -15,7 +15,6 @@ import { ShoppingCart, Plus, Trash2, Send } from 'lucide-react';
  * ✔ Consume exclusivamente Bloque B
  * ✔ Es reusable para múltiples rubros
  */
-
 const C1_SimpleCatalog = ({ entityData }) => {
   const [activeTab, setActiveTab] = useState(null);
   const [cart, setCart] = useState([]);
@@ -26,7 +25,6 @@ const C1_SimpleCatalog = ({ entityData }) => {
   // Extraer datos del Bloque B
   const bloqueB = entityData?.bloque_B_contexto_comercial || {};
   const { identity = {}, contacto = {}, catalogo = {} } = bloqueB;
-
   const nombreComercio = identity.nombre_comercio || 'Comercio';
   const whatsappNumber = contacto.whatsapp_number || '';
   const categorias = catalogo.categorias || [];
@@ -47,21 +45,17 @@ const C1_SimpleCatalog = ({ entityData }) => {
   const addToCart = (item, size = null) => {
     const precio = size
       ? (size === 'mediana' ? item.precio_mediana : item.precio_grande)
-      : item.precio;
-
+      : item.precio_final || item.precio;
     const newItem = {
       ...item,
       size,
       precio,
       cartId: Date.now() + Math.random()
     };
-
     setCart([...cart, newItem]);
-
     const sizeText = size ? ` (${size})` : '';
     setToast(`✓ ${item.nombre}${sizeText} agregado`);
     setTimeout(() => setToast(null), 2000);
-
     setCartBounce(true);
     setTimeout(() => setCartBounce(false), 500);
   };
@@ -76,15 +70,12 @@ const C1_SimpleCatalog = ({ entityData }) => {
 
   const generateWhatsAppMessage = () => {
     let mensaje = `Hola! Vengo desde ÍndiceIA. Este es mi pedido:\n\n`;
-
     cart.forEach(item => {
       const sizeText = item.size ? ` (${item.size})` : '';
       mensaje += `• ${item.nombre}${sizeText} [${item.id}] - $${item.precio.toLocaleString()}\n`;
     });
-
     mensaje += `\nTOTAL: $${getTotal().toLocaleString()}\n\n`;
     mensaje += `Quedo a la espera de la confirmación. Gracias!`;
-
     return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensaje)}`;
   };
 
@@ -93,13 +84,11 @@ const C1_SimpleCatalog = ({ entityData }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100">
-
       {toast && (
         <div className="fixed top-24 left-1/2 transform -translate-x-1/2 bg-slate-700 text-white px-3 py-2 rounded-lg shadow-xl z-50 text-xs font-semibold">
           {toast}
         </div>
       )}
-
       <div className="sticky top-0 z-50 bg-slate-800 text-white shadow-lg">
         <div className="px-3 py-1.5 flex items-center justify-between">
           <h1 className="text-sm font-bold">{nombreComercio}</h1>
@@ -113,7 +102,6 @@ const C1_SimpleCatalog = ({ entityData }) => {
             <span>{totalItems}</span>
           </button>
         </div>
-
         <div className="flex bg-slate-700 overflow-x-auto">
           {categorias.map(categoria => (
             <button
@@ -130,7 +118,6 @@ const C1_SimpleCatalog = ({ entityData }) => {
           ))}
         </div>
       </div>
-
       {showCart && totalItems > 0 && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setShowCart(false)}>
           <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl max-h-96 overflow-y-auto z-50" onClick={(e) => e.stopPropagation()}>
@@ -138,7 +125,6 @@ const C1_SimpleCatalog = ({ entityData }) => {
               <h2 className="font-bold text-sm">Tu Pedido ({totalItems})</h2>
               <button onClick={() => setShowCart(false)}>✕</button>
             </div>
-
             <div className="p-3 space-y-2">
               {cart.map(item => (
                 <div key={item.cartId} className="flex justify-between items-center bg-slate-50 p-2 rounded-lg">
@@ -155,7 +141,6 @@ const C1_SimpleCatalog = ({ entityData }) => {
                   </div>
                 </div>
               ))}
-
               <div className="border-t pt-3">
                 <div className="flex justify-between mb-3">
                   <span className="font-bold">TOTAL</span>
@@ -174,21 +159,18 @@ const C1_SimpleCatalog = ({ entityData }) => {
           </div>
         </div>
       )}
-
       <div className="p-2 pb-32 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
         {itemsActivos.map(item => (
           <div key={item.id} className="bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="h-40 bg-gray-200">
               <img
-                src={item.image_url || 'https://via.placeholder.com/800x600?text=Sin+Imagen'}
+                src={item.imagen || item.image_url || 'https://via.placeholder.com/800x600?text=Sin+Imagen'}
                 alt={item.nombre}
                 className="w-full h-full object-cover"
               />
             </div>
-
             <div className="p-2">
               <h3 className="font-bold text-sm mb-2">{item.nombre}</h3>
-
               {item.precio_mediana && item.precio_grande ? (
                 ['mediana', 'grande'].map(size => (
                   <div key={size} className="flex justify-between bg-amber-50 p-2 rounded mb-1">
@@ -205,7 +187,7 @@ const C1_SimpleCatalog = ({ entityData }) => {
                 ))
               ) : (
                 <div className="flex justify-between bg-amber-50 p-2 rounded">
-                  <span className="font-bold text-sm text-amber-600">${item.precio.toLocaleString()}</span>
+                  <span className="font-bold text-sm text-amber-600">${item.precio_final.toLocaleString()}</span>
                   <button onClick={() => addToCart(item)} className="bg-amber-600 text-white px-3 py-1 rounded text-xs font-bold">
                     <Plus size={14} /> Agregar
                   </button>
@@ -219,12 +201,10 @@ const C1_SimpleCatalog = ({ entityData }) => {
   );
 };
 
-// === WORKAROUND SOLO PARA PREVIEWS STANDALONE ===
-// Esto permite que el preview (full.html) cargue el componente con Babel standalone
-// En producción real (con Vite, Next, etc.) se ignora porque usa el export default
+// === WORKAROUND PARA PREVIEWS STANDALONE (Babel standalone) ===
 if (typeof window !== 'undefined') {
   window.C1_SimpleCatalog = C1_SimpleCatalog;
 }
 
-// Export normal para producción (bundlers lo usan correctamente)
+// Export normal para producción con bundler
 export default C1_SimpleCatalog;
