@@ -201,10 +201,11 @@ const C1_SimpleCatalog = ({ entityData }) => {
   );
 };
 
-// === WORKAROUND PARA PREVIEWS STANDALONE (Babel standalone) ===
+// === WORKAROUND PARA PREVIEWS STANDALONE ===
 if (typeof window !== 'undefined') {
   window.C1_SimpleCatalog = C1_SimpleCatalog;
 }
 
-// Export normal para producción con bundler
-export default C1_SimpleCatalog;
+// Comentamos el export default para que Babel standalone no tire "exports is not defined"
+// En producción (bundler) esto no afecta porque el build lo maneja de otra forma
+// export default C1_SimpleCatalog;
