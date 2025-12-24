@@ -1,0 +1,15 @@
+{
+  "template_id": "C1_SimpleCatalog",
+
+  "runtime": {
+    "mode": "iframe",
+    "entry": "component.jsx"
+  },
+
+  "previews": {
+    "full": {
+      "type": "iframe",
+      "entry": "previews/C1_SimpleCatalog_full.html"
+    }
+  }
+}
