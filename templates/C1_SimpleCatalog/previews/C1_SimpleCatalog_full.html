@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preview: C1_SimpleCatalog - Pizzería Napolitana</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Lucide icons (los usás en tu componente) -->
+  <script src="https://unpkg.com/lucide-react@latest/dist/umd/lucide.min.js"></script>
+  <!-- Tu componente real (subido a templates/) -->
+  <script type="text/babel" src="https://indiceia-templates.vercel.app/templates/C1_SimpleCatalog/component.jsx"></script>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; background: #f8f9fa; }
+    #root { min-height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    // Datos fake REALISTAS según tu schema (Bloque B)
+    const fakeBloqueB = {
+      identity: {
+        nombre_comercio: "Pizzería Napolitana",
+        descripcion: "La mejor pizza artesanal de Casilda. ¡Masas finas y ingredientes frescos!",
+        categorias: ["Pizzas", "Empanadas", "Minutas"]
+      },
+      ubicacion: {
+        direccion: "Catamarca 1219",
+        ciudad: "Casilda",
+        provincia: "Buenos Aires",
+        pais: "Argentina"
+      },
+      contacto: {
+        whatsapp_number: "5493412295316",
+        telefono: "0341 22 95 316",
+        email: "napolitana@casilda.com",
+        instagram: "https://instagram.com/pizzerianapolitana"
+      },
+      horarios: {
+        lunes: { closed: true },
+        martes: { closed: false, morning: { enabled: true, open: "11:00", close: "14:30" }, afternoon: { enabled: true, open: "19:00", close: "23:00" } },
+        miercoles: { closed: false, morning: { enabled: true, open: "11:00", close: "14:30" }, afternoon: { enabled: true, open: "19:00", close: "23:00" } },
+        jueves: { closed: false, morning: { enabled: true, open: "11:00", close: "14:30" }, afternoon: { enabled: true, open: "19:00", close: "23:00" } },
+        viernes: { closed: false, morning: { enabled: true, open: "11:00", close: "14:30" }, afternoon: { enabled: true, open: "19:00", close: "00:30" } },
+        sabado: { closed: false, morning: { enabled: false }, afternoon: { enabled: true, open: "19:00", close: "01:00" } },
+        domingo: { closed: false, morning: { enabled: true, open: "12:00", close: "15:30" }, afternoon: { enabled: true, open: "19:00", close: "23:00" } }
+      },
+      catalogo: {
+        moneda: "ARS",
+        secciones: [
+          {
+            id: "principal",
+            titulo: "Menú Principal",
+            tipo: "grid",
+            prioridad: 1,
+            items: [
+              { id: "p1", nombre: "Pizza Margherita", precio_final: 8500, imagen: "https://via.placeholder.com/600x400?text=Margherita", categoria: "Pizzas", stock: 20 },
+              { id: "p2", nombre: "Pizza Napolitana", precio_final: 9500, imagen: "https://via.placeholder.com/600x400?text=Napolitana", categoria: "Pizzas", stock: 15 },
+              { id: "p3", nombre: "Empanada de Carne", precio_final: 1200, imagen: "https://via.placeholder.com/600x400?text=Empanada", categoria: "Empanadas", stock: 50 },
+              { id: "p4", nombre: "Fainá", precio_final: 3500, imagen: "https://via.placeholder.com/600x400?text=Faina", categoria: "Minutas", stock: 10 }
+            ]
+          }
+        ]
+      },
+      pagos: {
+        metodosDisponibles: ["efectivo", "tarjeta_debito", "mercadopago"]
+      },
+      ia: {
+        nombre: "NapoBot",
+        saludo: "¡Hola! ¿Qué pizza te tienta hoy? 🍕"
+      }
+    };
+
+    // Renderizamos tu componente con los datos fake
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(
+      <C1_SimpleCatalog entityData={{ bloque_B_contexto_comercial: fakeBloqueB }} />
+    );
+  </script>
+</body>
+</html>
