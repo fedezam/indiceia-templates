@@ -219,4 +219,12 @@ const C1_SimpleCatalog = ({ entityData }) => {
   );
 };
 
+// === WORKAROUND SOLO PARA PREVIEWS STANDALONE ===
+// Esto permite que el preview (full.html) cargue el componente con Babel standalone
+// En producción real (con Vite, Next, etc.) se ignora porque usa el export default
+if (typeof window !== 'undefined') {
+  window.C1_SimpleCatalog = C1_SimpleCatalog;
+}
+
+// Export normal para producción (bundlers lo usan correctamente)
 export default C1_SimpleCatalog;
