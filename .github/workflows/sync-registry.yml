@@ -10,25 +10,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout templates repo
+      - name: Checkout indiceia-templates
         uses: actions/checkout@v4
 
-      - name: Checkout indiceia repo
+      - name: Checkout indiceia
         uses: actions/checkout@v4
         with:
           repository: fedezam/indiceia
           token: ${{ secrets.GITHUB_TOKEN }}
-          path: indiceia
+          path: ./indiceia
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Run sync script
-        working-directory: indiceia
+      - name: Debug tree (IMPORTANTE)
         run: |
-          node scripts/sync-templates.js
+          echo "ROOT:"
+          ls -la
+          echo "INDICEIA:"
+          ls -la indiceia
+          echo "SCRIPTS:"
+          ls -la indiceia/scripts
+
+      - name: Run sync script
+        run: node indiceia/scripts/sync-templates.js
 
       - name: Commit registry update
         working-directory: indiceia
