@@ -1,0 +1,40 @@
+name: Sync Templates Registry
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout templates repo
+        uses: actions/checkout@v4
+
+      - name: Checkout indiceia repo
+        uses: actions/checkout@v4
+        with:
+          repository: fedezam/indiceia
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: indiceia
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run sync script
+        working-directory: indiceia
+        run: |
+          node scripts/sync-templates.js
+
+      - name: Commit registry update
+        working-directory: indiceia
+        run: |
+          git config user.name "IndiceIA Bot"
+          git config user.email "bot@indiceia.com"
+          git add api/entity-factory/templates/registry.json
+          git commit -m "chore: sync templates registry" || echo "No changes"
+          git push
