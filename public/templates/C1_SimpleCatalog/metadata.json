@@ -1,35 +1,52 @@
 {
   "template_id": "C1_SimpleCatalog",
+  "name": "Menú Simple",
   "version": "1.0.0",
   "tier": "C1",
   "type": "visual_catalog",
-  "checkout": "whatsapp",
-  "data_source": "bloque_B",
+
+  "description": "Catálogo visual simple con categorías y carrito, ideal para comercios gastronómicos que venden por WhatsApp. Rápido de cargar, fácil de usar y optimizado para móviles.",
+
+  "ideal_for": [
+    "pizzerías",
+    "restaurantes",
+    "cafeterías",
+    "panaderías",
+    "bares",
+    "heladerías",
+    "comercios con catálogo simple"
+  ],
+
+  "visual": {
+    "preview_html": "previews/C1_SimpleCatalog_full.html",
+    "thumbnail": "previews/thumbnail.png"
+  },
+
   "supports": {
     "categories": true,
     "cart": true,
     "single_image_per_item": true,
     "multiple_prices": true
   },
-  "ideal_for": [
-    "pizzerias",
-    "restaurantes",
-    "cafeterias",
-    "panaderias",
-    "bares",
-    "heladerias",
-    "comercios con catálogo simple"
+
+  "limitations": [
+    "no variantes complejas",
+    "no búsqueda",
+    "no filtros avanzados",
+    "una imagen por producto"
   ],
+
+  "data_source": "bloque_B",
+
   "requirements": {
     "whatsapp_number": "obligatorio",
     "catalogo.categorias": "obligatorio",
     "catalogo.items": "obligatorio"
   },
-  "limitations": [
-    "no variantes complejas",
-    "no búsqueda",
-    "no filtros avanzados",
-    "1 imagen por producto"
-  ],
+
+  "links": {
+    "readme": "README.md"
+  },
+
   "license": "IndiceIA Commercial Template"
 }
