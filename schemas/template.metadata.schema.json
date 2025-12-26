@@ -47,6 +47,7 @@
     },
     "supports": {
       "type": "object",
+      "minProperties": 1,
       "additionalProperties": { "type": "boolean" }
     },
     "limitations": {
@@ -65,7 +66,8 @@
           "type": "string",
           "format": "uri"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "previews": {
       "type": "object",
