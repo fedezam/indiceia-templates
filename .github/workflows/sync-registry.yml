@@ -31,7 +31,10 @@ jobs:
         run: npm install
       
       - name: Run sync script
-        run: node indiceia/scripts/sync-templates.js
+        working-directory: ./indiceia
+        env:
+          TEMPLATES_PATH: ${{ github.workspace }}
+        run: node scripts/sync-templates.js
       
       - name: Commit registry updates
         working-directory: indiceia
