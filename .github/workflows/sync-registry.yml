@@ -48,3 +48,4 @@ jobs:
           git add api/entity-factory/templates/registry.entity.json
           git commit -m "chore: sync templates registries (visual + entity)" || echo "No changes"
           git push
+
