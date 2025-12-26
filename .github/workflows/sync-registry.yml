@@ -1,5 +1,4 @@
 name: Sync Templates Registry
-
 on:
   push:
     branches: [main]
@@ -8,7 +7,6 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout indiceia-templates
         uses: actions/checkout@v4
@@ -29,15 +27,20 @@ jobs:
         with:
           node-version: 20
 
-      - name: Run sync script
-        run: node indiceia/scripts/sync-templates.js
+      - name: Install dependencies
+        working-directory: indiceia
+        run: npm install ajv
 
-      - name: Commit registry update
+      - name: Run sync script
+        working-directory: indiceia
+        run: node scripts/sync-templates.js
+
+      - name: Commit registry updates
         working-directory: indiceia
         run: |
           git config user.name "IndiceIA Bot"
           git config user.email "bot@indiceia.com"
-          git add api/entity-factory/templates/registry.json
-          git commit -m "chore: sync templates registry" || echo "No changes"
+          git add public/templates/registry.visual.json
+          git add api/entity-factory/templates/registry.entity.json
+          git commit -m "chore: sync templates registries (visual + entity)" || echo "No changes"
           git push
-
