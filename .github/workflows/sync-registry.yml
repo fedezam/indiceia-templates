@@ -24,8 +24,7 @@ jobs:
 
       # 3️⃣ Clonar repo destino (indiceia) dentro del runner
       - name: Checkout indiceia (write access)
-        run: |
-          git clone git@github.com:fedezam/indiceia.git indiceia
+        run: git clone git@github.com:fedezam/indiceia.git indiceia
 
       # 4️⃣ Setup Node.js
       - name: Setup Node
@@ -36,7 +35,7 @@ jobs:
 
       # 5️⃣ Debug: confirmar que package.json y lock file existen
       - name: Check files in indiceia
-        run: ls -l indiceia
+        run: ls -l ./indiceia
 
       # 6️⃣ Instalar dependencias de indiceia
       - name: Install dependencies
