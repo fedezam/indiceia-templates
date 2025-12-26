@@ -10,33 +10,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout indiceia-templates (trigger repo)
+      - name: Checkout indiceia-templates
         uses: actions/checkout@v4
 
-      - name: Checkout indiceia (target repo)
-        uses: actions/checkout@v4
-        with:
-          repository: fedezam/indiceia
-          token: ${{ secrets.GITHUB_TOKEN }}
-          path: indiceia
+      - name: Setup SSH (deploy key)
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.INDICEIA_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Checkout indiceia (write access)
+        run: |
+          git clone git@github.com:fedezam/indiceia.git indiceia
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Debug tree (opcional)
-        run: |
-          echo "ROOT:"
-          ls -la
-          echo "INDICEIA:"
-          ls -la indiceia
-          echo "SCRIPTS:"
-          ls -la indiceia/scripts
-
       - name: Run sync script
-        env:
-          TEMPLATE_REPO_TOKEN: ${{ secrets.TEMPLATE_REPO_TOKEN }}
         run: node indiceia/scripts/sync-templates.js
 
       - name: Commit registry update
