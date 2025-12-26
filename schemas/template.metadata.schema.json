@@ -4,18 +4,19 @@
   "title": "IndiceIA Template Metadata",
   "type": "object",
   "required": [
-    "id",
     "name",
     "version",
     "tier",
-    "status",
     "description",
     "ideal_for",
     "supports",
-    "requirements",
     "visual"
   ],
   "properties": {
+    "template_id": {
+      "type": "string",
+      "pattern": "^[A-Z0-9_]+$"
+    },
     "id": {
       "type": "string",
       "pattern": "^[A-Z0-9_]+$"
@@ -30,11 +31,22 @@
     },
     "tier": {
       "type": "string",
-      "enum": ["C1", "C2", "C3"]
+      "enum": [
+        "C1",
+        "C2",
+        "C3"
+      ]
+    },
+    "type": {
+      "type": "string"
     },
     "status": {
       "type": "string",
-      "enum": ["stable", "beta", "experimental"]
+      "enum": [
+        "stable",
+        "beta",
+        "experimental"
+      ]
     },
     "description": {
       "type": "string",
@@ -42,45 +54,68 @@
     },
     "ideal_for": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "minItems": 1
     },
     "supports": {
       "type": "object",
       "minProperties": 1,
-      "additionalProperties": { "type": "boolean" }
+      "additionalProperties": {
+        "type": "boolean"
+      }
     },
     "limitations": {
       "type": "array",
-      "items": { "type": "string" }
+      "items": {
+        "type": "string"
+      }
+    },
+    "data_source": {
+      "type": "string"
     },
     "requirements": {
       "type": "object",
-      "additionalProperties": { "type": "string" }
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "visual": {
       "type": "object",
-      "required": ["iframe_url"],
       "properties": {
         "iframe_url": {
-          "type": "string",
-          "format": "uri"
+          "type": "string"
+        },
+        "preview_html": {
+          "type": "string"
+        },
+        "thumbnail": {
+          "type": "string"
         }
-      },
-      "additionalProperties": false
+      }
     },
     "previews": {
       "type": "object",
       "properties": {
-        "html": { "type": "string", "format": "uri" },
-        "component": { "type": "string", "format": "uri" }
+        "html": {
+          "type": "string"
+        },
+        "component": {
+          "type": "string"
+        }
       }
     },
     "links": {
       "type": "object",
       "properties": {
-        "readme": { "type": "string", "format": "uri" }
+        "readme": {
+          "type": "string"
+        }
       }
+    },
+    "license": {
+      "type": "string"
     }
   },
   "additionalProperties": false
