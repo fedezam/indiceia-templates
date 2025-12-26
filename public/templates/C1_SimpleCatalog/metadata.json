@@ -4,9 +4,7 @@
   "version": "1.0.0",
   "tier": "C1",
   "type": "visual_catalog",
-
-  "description": "Catálogo visual simple con categorías y carrito, ideal para comercios gastronómicos que venden por WhatsApp. Rápido de cargar, fácil de usar y optimizado para móviles.",
-
+  "description": "Catálogo visual simple y rápido con categorías, carrito de pedidos y checkout directo por WhatsApp. Soporta múltiples precios por producto (ideal para tamaños). Perfecto para comercios gastronómicos que venden principalmente por WhatsApp. Carga rápida, optimizado para móviles y experiencia de usuario fluida.",
   "ideal_for": [
     "pizzerías",
     "restaurantes",
@@ -14,39 +12,36 @@
     "panaderías",
     "bares",
     "heladerías",
+    "delivery de comida",
     "comercios con catálogo simple"
   ],
-
   "visual": {
     "preview_html": "previews/C1_SimpleCatalog_full.html",
     "thumbnail": "previews/thumbnail.png"
   },
-
   "supports": {
     "categories": true,
     "cart": true,
     "single_image_per_item": true,
-    "multiple_prices": true
+    "multiple_prices": true,
+    "search": false,
+    "filters": false,
+    "variants": false
   },
-
   "limitations": [
-    "no variantes complejas",
-    "no búsqueda",
-    "no filtros avanzados",
-    "una imagen por producto"
+    "Sin variantes complejas de productos",
+    "Sin función de búsqueda interna",
+    "Sin filtros avanzados",
+    "Una sola imagen por producto"
   ],
-
   "data_source": "bloque_B",
-
   "requirements": {
     "whatsapp_number": "obligatorio",
     "catalogo.categorias": "obligatorio",
     "catalogo.items": "obligatorio"
   },
-
   "links": {
     "readme": "README.md"
   },
-
   "license": "IndiceIA Commercial Template"
 }
