@@ -10,9 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout del repo de templates
       - name: Checkout indiceia-templates
         uses: actions/checkout@v4
 
+      # 2️⃣ Setup SSH deploy key
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -20,25 +22,33 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan github.com >> ~/.ssh/known_hosts
 
+      # 3️⃣ Clonar repo destino (indiceia)
       - name: Checkout indiceia (write access)
         run: git clone git@github.com:fedezam/indiceia.git indiceia
 
+      # 4️⃣ Setup Node.js
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Debug:confirm files
+      # 5️⃣ Debug: confirmar que package.json y lock file existen
+      - name: Check files in indiceia
         run: ls -l ./indiceia
 
+      # 6️⃣ Instalar dependencias de indiceia
       - name: Install dependencies
         working-directory: ./indiceia
         run: npm install
 
+      # 7️⃣ Ejecutar script de sync
       - name: Run sync script
         working-directory: ./indiceia
+        env:
+          TEMPLATE_REPO_TOKEN: ${{ secrets.TEMPLATE_REPO_TOKEN }}
         run: node scripts/sync-templates.js
 
+      # 8️⃣ Commit y push de los registries
       - name: Commit registry updates
         working-directory: ./indiceia
         run: |
@@ -48,4 +58,3 @@ jobs:
           git add api/entity-factory/templates/registry.entity.json
           git commit -m "chore: sync templates registries (visual + entity)" || echo "No changes"
           git push
-
