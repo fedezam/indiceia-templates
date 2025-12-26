@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://indiceia.com/schemas/template.metadata.schema.json",
+  "title": "IndiceIA Template Metadata",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "version",
+    "tier",
+    "status",
+    "description",
+    "ideal_for",
+    "supports",
+    "requirements",
+    "visual"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Z0-9_]+$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 3
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "tier": {
+      "type": "string",
+      "enum": ["C1", "C2", "C3"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["stable", "beta", "experimental"]
+    },
+    "description": {
+      "type": "string",
+      "minLength": 20
+    },
+    "ideal_for": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "supports": {
+      "type": "object",
+      "additionalProperties": { "type": "boolean" }
+    },
+    "limitations": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "requirements": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "visual": {
+      "type": "object",
+      "required": ["iframe_url"],
+      "properties": {
+        "iframe_url": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "previews": {
+      "type": "object",
+      "properties": {
+        "html": { "type": "string", "format": "uri" },
+        "component": { "type": "string", "format": "uri" }
+      }
+    },
+    "links": {
+      "type": "object",
+      "properties": {
+        "readme": { "type": "string", "format": "uri" }
+      }
+    }
+  },
+  "additionalProperties": false
+}
