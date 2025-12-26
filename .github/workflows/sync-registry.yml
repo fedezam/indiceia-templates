@@ -1,60 +1,133 @@
-name: Sync Templates Registry
+#!/usr/bin/env node
+import fs from 'fs';
+import path from 'path';
+import { execSync } from 'child_process';
+import Ajv from 'ajv';
 
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+// ================= CONFIG =================
+const TEMPLATE_REPO = 'fedezam/indiceia-templates';
+const TMP_DIR = '.tmp-templates';
 
-jobs:
-  sync:
-    runs-on: ubuntu-latest
+const VISUAL_OUTPUT = 'public/templates/registry.visual.json';
+const ENTITY_OUTPUT = 'api/entity-factory/templates/registry.entity.json';
 
-    steps:
-      # 1️⃣ Checkout del repo de templates
-      - name: Checkout indiceia-templates
-        uses: actions/checkout@v4
+// ================= UTILS =================
+function run(cmd) {
+  execSync(cmd, { stdio: 'inherit' });
+}
 
-      # 2️⃣ Setup SSH deploy key
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.INDICEIA_DEPLOY_KEY }}" | tr -d '\r' > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
+function readJSON(p) {
+  return JSON.parse(fs.readFileSync(p, 'utf-8'));
+}
 
-      # 3️⃣ Clonar repo destino (indiceia)
-      - name: Checkout indiceia (write access)
-        run: git clone git@github.com:fedezam/indiceia.git indiceia
+function writeJSON(p, data) {
+  fs.mkdirSync(path.dirname(p), { recursive: true });
+  fs.writeFileSync(p, JSON.stringify(data, null, 2), 'utf-8');
+}
 
-      # 4️⃣ Setup Node.js
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+// ================= MAIN =================
+function cloneRepo() {
+  if (fs.existsSync(TMP_DIR)) {
+    fs.rmSync(TMP_DIR, { recursive: true, force: true });
+  }
 
-      # 5️⃣ Debug: confirmar que package.json y lock file existen
-      - name: Check files in indiceia
-        run: ls -l ./indiceia
+  console.log('📥 Clonando repo de templates via SSH...');
+  run(`git clone --depth=1 git@github.com:${TEMPLATE_REPO}.git ${TMP_DIR}`);
+}
 
-      # 6️⃣ Instalar dependencias de indiceia
-      - name: Install dependencies
-        working-directory: ./indiceia
-        run: npm install
+function loadTemplates() {
+  const root = path.join(TMP_DIR, 'public', 'templates');
 
-      # 7️⃣ Ejecutar script de sync
-      - name: Run sync script
-        working-directory: ./indiceia
-        env:
-          TEMPLATE_REPO_TOKEN: ${{ secrets.TEMPLATE_REPO_TOKEN }}
-        run: node scripts/sync-templates.js
+  if (!fs.existsSync(root)) {
+    throw new Error('❌ No existe public/templates en el repo de templates');
+  }
 
-      # 8️⃣ Commit y push de los registries
-      - name: Commit registry updates
-        working-directory: ./indiceia
-        run: |
-          git config user.name "IndiceIA Bot"
-          git config user.email "bot@indiceia.com"
-          git add public/templates/registry.visual.json
-          git add api/entity-factory/templates/registry.entity.json
-          git commit -m "chore: sync templates registries (visual + entity)" || echo "No changes"
-          git push
+  return fs.readdirSync(root).filter(dir =>
+    fs.statSync(path.join(root, dir)).isDirectory()
+  );
+}
+
+function buildRegistries(dirs) {
+  const ajv = new Ajv({ allErrors: true, strict: false });
+  const metadataSchema = readJSON(path.join(TMP_DIR, 'schemas', 'template.metadata.schema.json'));
+  const validateMetadata = ajv.compile(metadataSchema);
+
+  const visualRegistry = {
+    registry_version: '1.0.0',
+    last_updated: new Date().toISOString(),
+    templates: []
+  };
+
+  const entityRegistry = {
+    registry_version: '1.0.0',
+    last_updated: visualRegistry.last_updated,
+    templates: {}
+  };
+
+  for (const dir of dirs) {
+    const base = path.join(TMP_DIR, 'public', 'templates', dir);
+    const metaPath = path.join(base, 'metadata.json');
+
+    if (!fs.existsSync(metaPath)) {
+      console.warn(`⚠️ ${dir} sin metadata.json (omitido)`);
+      continue;
+    }
+
+    const meta = readJSON(metaPath);
+
+    if (!validateMetadata(meta)) {
+      console.error(`❌ Metadata inválida en ${dir}`);
+      console.error(validateMetadata.errors);
+      continue;
+    }
+
+    // ================= VISUAL =================
+    visualRegistry.templates.push({
+      id: meta.id,
+      name: meta.name,
+      version: meta.version,
+      tier: meta.tier,
+      description: meta.description,
+      ideal_for: meta.ideal_for,
+      visual: {
+        iframe_url: meta.visual.iframe_url
+      },
+      previews: {
+        html: meta.previews?.html || null
+      }
+    });
+
+    // ================= ENTITY =================
+    entityRegistry.templates[meta.id] = {
+      id: meta.id,
+      version: meta.version,
+      entrypoint: `templates/${dir}`,
+      supports: meta.supports,
+      requirements: meta.requirements
+    };
+  }
+
+  return { visualRegistry, entityRegistry };
+}
+
+function cleanup() {
+  fs.rmSync(TMP_DIR, { recursive: true, force: true });
+}
+
+// ================= RUN =================
+function main() {
+  cloneRepo();
+  const dirs = loadTemplates();
+  const { visualRegistry, entityRegistry } = buildRegistries(dirs);
+
+  writeJSON(VISUAL_OUTPUT, visualRegistry);
+  writeJSON(ENTITY_OUTPUT, entityRegistry);
+
+  cleanup();
+
+  console.log('✅ Registries generados correctamente');
+  console.log(`→ ${VISUAL_OUTPUT}`);
+  console.log(`→ ${ENTITY_OUTPUT}`);
+}
+
+main();
