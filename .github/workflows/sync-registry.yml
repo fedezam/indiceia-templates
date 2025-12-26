@@ -34,19 +34,23 @@ jobs:
           node-version: 20
           cache: "npm"
 
-      # 5️⃣ Instalar dependencias de indiceia
+      # 5️⃣ Debug: confirmar que package.json y lock file existen
+      - name: Check files in indiceia
+        run: ls -l indiceia
+
+      # 6️⃣ Instalar dependencias de indiceia
       - name: Install dependencies
-        working-directory: indiceia
+        working-directory: ./indiceia
         run: npm ci
 
-      # 6️⃣ Ejecutar script de sync
+      # 7️⃣ Ejecutar script de sync
       - name: Run sync script
-        working-directory: indiceia
+        working-directory: ./indiceia
         run: node scripts/sync-templates.js
 
-      # 7️⃣ Commit y push de los registries
+      # 8️⃣ Commit y push de los registries
       - name: Commit registry updates
-        working-directory: indiceia
+        working-directory: ./indiceia
         run: |
           git config user.name "IndiceIA Bot"
           git config user.email "bot@indiceia.com"
