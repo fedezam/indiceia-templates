@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C1_SimpleCatalog – Runtime</title>
+
+  <!-- React PROD -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- Babel (runtime simple, sin build) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Lucide -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body { margin: 0; background: #f1f5f9; }
+    #root { min-height: 100vh; }
+  </style>
+</head>
+<body>
+
+  <div id="root"></div>
+
+  <!-- Loader cognitivo -->
+  <script type="text/babel">
+    let currentData = null;
+
+    const renderIfReady = () => {
+      if (!window.C1_SimpleCatalog || !currentData) return;
+
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(
+        <window.C1_SimpleCatalog
+          entityData={{ bloque_B_contexto_comercial: currentData }}
+        />
+      );
+    };
+
+    window.addEventListener("message", (event) => {
+      if (!event.data || typeof event.data !== "object") return;
+
+      currentData = event.data;
+      renderIfReady();
+    });
+  </script>
+
+  <!-- COMPONENTE REAL (mismo que preview, sin fake data) -->
+  <script type="text/babel" src="./previews/component.preview.jsx"></script>
+
+</body>
+</html>
