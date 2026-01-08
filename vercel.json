@@ -1,14 +1,7 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "public"
-      }
-    }
-  ],
+  "version": 3,
+  "name": "indiceia-templates",
+  "public": true,
   "routes": [
     {
       "src": "/templates/(.*)",
