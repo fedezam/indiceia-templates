@@ -12,7 +12,8 @@ function readJSON(file) {
 function scanTemplates() {
   const out = {};
 
-  const dirs = fs.readdirSync(TEMPLATES_DIR, { withFileTypes: true })
+  const dirs = fs
+    .readdirSync(TEMPLATES_DIR, { withFileTypes: true })
     .filter(d => d.isDirectory());
 
   for (const dir of dirs) {
@@ -43,7 +44,8 @@ function scanTemplates() {
       tier: metadata.tier,
 
       paths: {
-        iframe_url: `/templates/${id}/component.jsx`
+        preview_jsx: `/templates/${id}/component.jsx`,
+        runtime_html: `/templates/${id}/runtime.html`
       },
 
       previews,
@@ -61,3 +63,4 @@ const registry = {
 
 fs.writeFileSync(OUTPUT, JSON.stringify(registry, null, 2));
 console.log("✔ registry.json generado");
+
