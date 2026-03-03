@@ -24,34 +24,37 @@
   <style>
     body { margin: 0; background: #f1f5f9; }
     #root { min-height: 100vh; }
+    .ad-wrapper { width: 100%; background: #f8fafc; text-align: center; padding: 4px 0; }
   </style>
 </head>
 <body>
 
+  <!-- AdSense arriba -->
+  <div class="ad-wrapper">
+    <ins class="adsbygoogle"
+      style="display:block"
+      data-ad-client="ca-pub-1371093897924247"
+      data-ad-slot="2790559928"
+      data-ad-format="link"
+      data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
   <div id="root"></div>
+
+  <!-- AdSense abajo -->
+  <div class="ad-wrapper">
+    <ins class="adsbygoogle"
+      style="display:block"
+      data-ad-client="ca-pub-1371093897924247"
+      data-ad-slot="2790559928"
+      data-ad-format="link"
+      data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
 
   <!-- Loader cognitivo -->
   <script type="text/babel">
-    const { useEffect } = React;
-
-    // Bloque AdSense reutilizable
-    window.AdBanner = () => {
-      useEffect(() => {
-        try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
-      }, []);
-      return (
-        <div style={{ width: "100%", textAlign: "center", background: "#f8fafc" }}>
-          <ins className="adsbygoogle"
-            style={{ display: "block" }}
-            data-ad-client="ca-pub-1371093897924247"
-            data-ad-slot="auto"
-            data-ad-format="auto"
-            data-full-width-responsive="true">
-          </ins>
-        </div>
-      );
-    };
-
     let currentData = null;
 
     const renderIfReady = () => {
