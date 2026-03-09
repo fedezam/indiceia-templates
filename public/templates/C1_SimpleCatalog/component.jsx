@@ -1,7 +1,7 @@
 window.C1_SimpleCatalog = function SimpleCatalog({ entityData }) {
 
   const goods =
-    entityData?.bloque_B_contexto_comercial?.goods || []
+    entityData?.goods || []
 
   const categories = [...new Set(goods.map(g => g.categoria || "General"))]
 
