@@ -1,111 +1,103 @@
-# C1_SimpleCatalog
+# ÍndiceIA Templates
 
-Template visual de **catálogo simple con carrito y checkout vía WhatsApp**.  
-Forma parte del marketplace de templates de **ÍndiceIA**.
+Repositorio oficial de templates visuales para el ecosistema **ÍndiceIA**.
 
----
-
-## 🧩 ¿Qué es este template?
-
-`C1_SimpleCatalog` es una interfaz visual lista para usar que permite:
-
-- Mostrar productos organizados por categorías
-- Agregar productos a un carrito
-- Calcular totales automáticamente
-- Enviar el pedido por WhatsApp al comercio
-
-Todo el contenido se renderiza **exclusivamente desde Bloque B**.  
-No hay datos hardcodeados ni lógica de negocio embebida.
+Cada template es una **mini app HTML** que se sirve directamente en el browser. Recibe los datos del comercio mediante un merge de placeholders y se despliega como experiencia visual completa — catálogo, carrito, checkout por WhatsApp, y lo que el template defina.
 
 ---
 
-## ✅ Casos ideales de uso
+## Cómo funciona
 
-Este template es ideal si tu comercio:
+Cuando un comercio registrado en ÍndiceIA genera su entidad, el `entity-factory` hace:
 
-- Tiene **catálogo simple**
-- Usa **WhatsApp como canal de ventas**
-- No requiere configuraciones complejas por producto
+```
+1. Descarga template.txt del repo
+2. Reemplaza placeholders con datos reales del comercio
+3. Sube el HTML resultante a Vercel Blob
+4. La mini app queda disponible en:
+   https://indiceia-public.vercel.app/m/[slug]
+```
 
-### Rubros frecuentes
-- Pizzerías
-- Restaurantes
-- Cafeterías
-- Panaderías
-- Bares
-- Heladerías
-- Comercios gastronómicos en general
+El template nunca necesita conocer al comercio. Solo define la estructura y el comportamiento. Los datos llegan via placeholders.
 
 ---
 
-## ❌ Cuándo NO usar este template
+## Placeholders disponibles
 
-No es recomendado si necesitás:
+| Placeholder | Descripción |
+|---|---|
+| `{{NOMBRE_COMERCIO}}` | Nombre del comercio |
+| `{{WHATSAPP}}` | Número de WhatsApp (solo dígitos) |
+| `{{GOODS}}` | Array JSON con el catálogo completo |
 
-- Variantes complejas (toppings, combinaciones)
-- Múltiples imágenes por producto
-- Búsqueda o filtros avanzados
-- Checkout con pagos integrados
-
-En esos casos, se recomienda un template C2 o C3.
-
----
-
-## 📦 Datos requeridos (Bloque B)
+### Estructura de `{{GOODS}}`
 
 ```json
-{
-  "identity": {
-    "nombre_comercio": "Mi Comercio"
-  },
-  "contacto": {
-    "whatsapp_number": "549XXXXXXXXXX"
-  },
-  "catalogo": {
-    "categorias": ["Categoria A", "Categoria B"],
-    "items": [
-      {
-        "id": "A01",
-        "nombre": "Producto",
-        "categoria": "Categoria A",
-        "image_url": "https://...",
-        "precio": 1000
-      }
+[
+  {
+    "id": "P01",
+    "nombre": "Producto",
+    "descripcion": "Descripción opcional",
+    "categoria": "Categoría",
+    "precio_final": 1000,
+    "imagen": "https://...",
+    "variantes": [
+      { "id": "v1", "label": "Chica", "precio": 800 },
+      { "id": "v2", "label": "Grande", "precio": 1200 }
     ]
   }
-}
+]
+```
 
-⚠️ **Si falta `whatsapp_number`, el checkout no puede funcionar.**
-
----
-
-## 🧠 Integración con ÍndiceIA
-
-Este template se activa cuando:
-
-- Bloque C declara `template_id: C1_SimpleCatalog`
-- El chat ofrece pasar de vista conversacional a vista visual
-- El iframe recibe Bloque B completo vía `postMessage`
-
-El template no toma decisiones: **solo renderiza**.
+`variantes` es opcional. Si no existe, se usa `precio_final`.
 
 ---
 
-## 🛒 Marketplace & Templates Personalizados
+## Estructura del repositorio
 
-Este template forma parte del marketplace oficial de ÍndiceIA.
-
-Si sos comercio o desarrollador y necesitás:
-
-- Branding personalizado
-- Nuevas variantes visuales
-- Funcionalidades adicionales
-
-👉 ÍndiceIA ofrece templates a medida bajo esquema comercial.  
-**Contacto:** contacto@indiceia.com
+```
+indiceia-templates/
+  schemas/
+    template.metadata.schema.json   ← schema oficial de metadata
+  public/
+    templates/
+      C1_SimpleCatalog/             ← template de ejemplo
+        template.txt                ← el archivo principal
+        metadata.json               ← descripción para el marketplace
+        previews/
+          C1_SimpleCatalog_full.html
+        README.md
+  CONTRIBUTING.md                   ← guía para crear templates
+  vercel.json
+```
 
 ---
 
-## 📄 Licencia
+## Templates disponibles
 
-Uso comercial permitido únicamente dentro del ecosistema ÍndiceIA.
+| ID | Nombre | Rubros ideales | Tier |
+|---|---|---|---|
+| `C1_SimpleCatalog` | Menú Simple | Gastronomía, delivery, comercios con catálogo básico | C1 |
+
+---
+
+## Tiers
+
+| Tier | Descripción |
+|---|---|
+| **C1** | Template simple. Catálogo, carrito, WhatsApp. Sin configuración. |
+| **C2** | Template intermedio. Variantes complejas, filtros, búsqueda. |
+| **C3** | Template avanzado. Diseño a medida, funcionalidades especiales. |
+
+---
+
+## Crear un template nuevo
+
+Leé [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+---
+
+## Licencia
+
+Uso comercial permitido únicamente dentro del ecosistema ÍndiceIA.  
+Templates de terceros pueden tener licencia propia — verificar `metadata.json` de cada template.
