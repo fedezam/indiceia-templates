@@ -10,32 +10,35 @@ jobs:
     steps:
       - name: Checkout indiceia-templates
         uses: actions/checkout@v4
-      
+
       - name: Setup SSH (deploy key)
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.INDICEIA_DEPLOY_KEY }}" | tr -d '\r' > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan github.com >> ~/.ssh/known_hosts
-      
+
       - name: Checkout indiceia (write access)
         run: git clone git@github.com:fedezam/indiceia.git indiceia
-      
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      
+
+      - name: Compile templates (src/ → template.txt)
+        run: node scripts/compile.js
+
       - name: Install dependencies
         working-directory: ./indiceia
         run: npm install
-      
+
       - name: Run sync script
         working-directory: ./indiceia
         env:
           TEMPLATES_PATH: ${{ github.workspace }}
         run: node scripts/sync-templates.js
-      
+
       - name: Commit registry updates
         working-directory: indiceia
         run: |
