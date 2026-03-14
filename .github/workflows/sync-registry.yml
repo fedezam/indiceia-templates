@@ -9,35 +9,46 @@ jobs:
     steps:
       - name: Checkout indiceia-templates
         uses: actions/checkout@v4
+
       - name: Setup SSH (deploy key)
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.INDICEIA_DEPLOY_KEY }}" | tr -d '\r' > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan github.com >> ~/.ssh/known_hosts
+
       - name: Checkout indiceia (write access)
         run: git clone git@github.com:fedezam/indiceia.git indiceia
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+
       - name: Compile templates (src/ → template.txt)
         run: node scripts/compile.js
-      - name: Install dependencies
-        working-directory: ./indiceia
-        run: npm install
-      - name: Run sync script
-        working-directory: ./indiceia
-        env:
-          TEMPLATES_PATH: ${{ github.workspace }}
-        run: node scripts/sync-templates.js
-      - name: Commit registry updates
+
+      - name: Rebase indiceia antes del sync
         working-directory: indiceia
         run: |
           git config user.name "IndiceIA Bot"
           git config user.email "bot@indiceia.com"
           git fetch origin main
           git rebase origin/main
+
+      - name: Install dependencies
+        working-directory: ./indiceia
+        run: npm install
+
+      - name: Run sync script
+        working-directory: ./indiceia
+        env:
+          TEMPLATES_PATH: ${{ github.workspace }}
+        run: node scripts/sync-templates.js
+
+      - name: Commit registry updates
+        working-directory: indiceia
+        run: |
           git add public/templates/registry.visual.json
           git add api/entity-factory/templates/registry.entity.json
           git commit -m "chore: sync templates registries" || echo "No changes"
