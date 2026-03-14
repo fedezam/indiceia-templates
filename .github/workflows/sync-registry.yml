@@ -44,6 +44,7 @@ jobs:
         run: |
           git config user.name "IndiceIA Bot"
           git config user.email "bot@indiceia.com"
+          git pull --rebase origin main
           git add public/templates/registry.visual.json
           git add api/entity-factory/templates/registry.entity.json
           git commit -m "chore: sync templates registries" || echo "No changes"
