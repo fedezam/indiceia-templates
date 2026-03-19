@@ -1,0 +1,36 @@
+{
+  "template_id": "C3_RestaurantMenu",
+  "name": "Restaurant Menu Premium",
+  "version": "1.0.0",
+  "tier": "C3",
+  "type": "visual_catalog",
+  "status": "stable",
+  "description": "Menú digital premium con diseño oscuro y elegante. Ideal para restaurantes, bares y deliveries que quieren una presencia digital de alta gama. Incluye categorías agrupadas, búsqueda, variantes, carrito como bottom sheet y checkout por WhatsApp.",
+  "ideal_for": ["restaurantes", "delivery", "bares", "cafeterías", "pizzerías", "hamburgueserías", "sushi"],
+  "supports": {
+    "categories": true,
+    "cart": true,
+    "search": true,
+    "variants": true,
+    "images": true
+  },
+  "features": [
+    "Diseño oscuro premium con tipografía Playfair Display",
+    "Agrupado por categorías automáticamente",
+    "Barra de búsqueda en tiempo real",
+    "Modal de producto con variantes seleccionables",
+    "Carrito como bottom sheet con animación smooth",
+    "Animaciones CSS staggered en cards",
+    "Fallback emoji por categoría cuando no hay imagen",
+    "Checkout WhatsApp con mensaje pre-armado",
+    "100% mobile-first, responsive hasta desktop"
+  ],
+  "limitations": ["Sin pagos integrados", "Sin sistema de reservas"],
+  "visual": {
+    "preview_html": "previews/preview.html",
+    "thumbnail": "previews/thumbnail.png",
+    "palette": ["#111111", "#D4AF37", "#E85D26", "#25D366"],
+    "fonts": ["Playfair Display", "DM Sans"]
+  },
+  "license": "IndiceIA Commercial Template"
+}
