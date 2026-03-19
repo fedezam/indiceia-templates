@@ -1,34 +1,32 @@
-# C3_RestaurantMenu
+# C1_SimpleCatalog
 
-**Template premium para restaurantes, bares y delivery.**
-
-Diseño oscuro y elegante con tipografía Playfair Display. Ideal para comercios gastronómicos que quieren una presencia digital de alta gama.
+Template base del ecosistema ÍndiceIA. Catálogo visual con categorías, carrito y checkout por WhatsApp.
 
 ---
+
+## Para qué sirve
+
+Ideal para cualquier comercio que quiera mostrar su catálogo online y recibir pedidos por WhatsApp. Sin instalación, sin cuenta, sin base de datos.
 
 ## Características
 
-- 🎨 Diseño oscuro premium con paleta dorada
-- 📂 Agrupado automático por categorías
-- 🔍 Búsqueda en tiempo real
-- 🛒 Carrito como bottom sheet con animación smooth
-- 🔀 Soporte de variantes (tamaños, opciones)
-- 📱 Mobile-first, 100% responsive
-- 💬 Checkout por WhatsApp con mensaje pre-armado
-- 🖼️ Fallback emoji por categoría cuando no hay imagen
-- ✨ Animaciones CSS staggered en tarjetas
-
----
+- Categorías con tabs navegables
+- Cards con imagen opcional y variantes de precio
+- Toggle retiro en local / envío a domicilio
+- Carrito como bottom sheet
+- Checkout directo por WhatsApp con mensaje pre-armado
+- Mobile-first, responsive hasta desktop
+- Animaciones sutiles (fadeUp, microinteracciones)
+- Fallback emoji si la imagen no carga
 
 ## Placeholders
 
-| Placeholder | Ejemplo |
+| Placeholder | Descripción |
 |---|---|
-| `{{NOMBRE_COMERCIO}}` | `La Brasserie` |
-| `{{WHATSAPP}}` | `5493412295316` |
-| `{{GOODS}}` | Array JSON (ver estructura abajo) |
-
----
+| `{{NOMBRE_COMERCIO}}` | Nombre que aparece en el header |
+| `{{WHATSAPP}}` | Número en formato internacional sin `+` (ej: `5493412295316`) |
+| `{{GOODS}}` | Array JSON con el catálogo |
+| `{{DELIVERY_COSTO}}` | Número con el costo de envío, o `null` si es a convenir |
 
 ## Estructura de GOODS
 
@@ -36,51 +34,53 @@ Diseño oscuro y elegante con tipografía Playfair Display. Ideal para comercios
 [
   {
     "id": "P01",
-    "nombre": "Bife de chorizo",
-    "descripcion": "400g con papas rústicas y chimichurri",
-    "categoria": "Principales",
+    "nombre": "Pizza Margherita",
+    "descripcion": "Opcional",
+    "categoria": "Pizzas",
     "precio_final": null,
+    "imagen": "https://...",
     "variantes": [
-      { "id": "v1", "label": "300g", "precio": 7200 },
-      { "id": "v2", "label": "400g", "precio": 8900 }
+      { "id": "v1", "label": "Personal", "precio": 4200 },
+      { "id": "v2", "label": "Familiar", "precio": 7800 }
     ]
   }
 ]
 ```
 
-- `imagen` y `variantes` son **opcionales**
-- Si hay variantes, `precio_final` puede ser `null`
-- Si hay una sola variante, se agrega sin abrir el modal
+- `imagen` → opcional, muestra emoji placeholder si no existe o si la URL falla
+- `variantes` → opcional, si no hay se usa `precio_final`
+- Si hay una sola variante, se usa automáticamente sin mostrar chips
 
 ---
 
-## Categorías con emoji automático
+## Imágenes de productos
 
-El template detecta emojis según palabras clave en el nombre de la categoría:
+Las imágenes se cargan via URL pública. El template no hostea ni procesa imágenes.
 
-| Categoría | Emoji |
-|---|---|
-| Entradas | 🥗 |
-| Principales | 🍽️ |
-| Postres | 🍮 |
-| Bebidas | 🥤 |
-| Pizza | 🍕 |
-| Burger / Hamburguesa | 🍔 |
+### Opción 1 — URL de cualquier sitio (más simple)
 
----
+Si el producto ya tiene foto en Instagram, MercadoLibre, Facebook u otro sitio:
 
-## Paleta de colores
+1. Abrí la foto en el navegador
+2. Click derecho → **Copiar dirección de imagen**
+3. Pegá esa URL en el campo "URL de imagen" del producto
 
-| Variable | Valor |
-|---|---|
-| `--gold` | `#D4AF37` |
-| `--gold-light` | `#F0CC5A` |
-| `--dark` | `#111111` |
-| `--accent` | `#E85D26` |
-| WhatsApp | `#25D366` |
+### Opción 2 — ImageKit.io (recomendada para fotos propias)
+
+Para subir fotos desde el celular o la computadora y obtener una URL estable con CDN mundial:
+
+1. Entrá a **[imagekit.io](https://imagekit.io)** → *Sign up with Google* (un clic)
+2. Subí la foto de tu producto
+3. Click derecho en la imagen → copiá la URL
+4. Pegala en el campo "URL de imagen" de tu producto en ÍndiceIA
+
+> ImageKit tiene un free tier generoso (20GB storage, 20GB bandwidth/mes) y las imágenes se sirven desde CDN mundial. Cada comercio usa su propia cuenta — las imágenes son tuyas.
 
 ---
 
-## Tier: C3
+## Delivery
 
-Template de diseño a medida para el rubro gastronómico. Incluye funcionalidades avanzadas como búsqueda en tiempo real, variantes seleccionables, modal de detalle y agrupado por categorías.
+El template soporta dos modalidades de entrega:
+
+- **Retiro en local** — el cliente elige esta opción, se indica en el mensaje de WhatsApp
+- **Envío a domicilio** — el cliente ingresa su dirección; si `DELIVERY_COSTO` tiene valor se suma al total, si es `null` aparece como "a convenir"
