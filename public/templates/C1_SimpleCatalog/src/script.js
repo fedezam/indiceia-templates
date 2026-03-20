@@ -9,16 +9,14 @@ let ENTREGA  = null;
 const cart   = {};
 let isDelivery = false;
 
-let _data = null;
-
 document.addEventListener('DOMContentLoaded', init);
 
 function init() {
-  _data    = JSON.parse(document.getElementById('__DATA__').textContent);
-  GOODS    = _data.goods    || [];
-  NOMBRE   = _data.nombre   || '';
-  WHATSAPP = _data.whatsapp || '';
-  ENTREGA  = _data.entrega  || null;
+  const data = JSON.parse(document.getElementById('__DATA__').textContent);
+  GOODS    = data.goods    || [];
+  NOMBRE   = data.nombre   || '';
+  WHATSAPP = data.whatsapp || '';
+  ENTREGA  = data.entrega  || null;
 
   const headerEl = document.getElementById('header-title');
   if (headerEl) headerEl.textContent = NOMBRE;
@@ -27,6 +25,8 @@ function init() {
   buildSections();
   updateCartCount();
 }
+
+// ── CATEGORÍAS ──────────────────────────────────────────────
 
 function getCategories() {
   return [...new Set(GOODS.map(g => g.categoria || 'General'))];
@@ -58,8 +58,8 @@ function buildSections() {
     section.appendChild(title);
     const grid = document.createElement('div');
     grid.className = 'grid';
-    const items = GOODS.filter(g => (g.categoria || 'General') === cat);
-    items.forEach(item => grid.appendChild(buildCard(item)));
+    GOODS.filter(g => (g.categoria || 'General') === cat)
+         .forEach(item => grid.appendChild(buildCard(item)));
     section.appendChild(grid);
     main.appendChild(section);
   });
@@ -76,17 +76,25 @@ function switchTab(cat, btn) {
   btn?.scrollIntoView({ behavior: 'smooth', inline: 'center' });
 }
 
+// ── CARDS ────────────────────────────────────────────────────
+
+function isValidImage(url) {
+  if (!url) return false;
+  if (url.startsWith('data:')) return false;
+  if (url.startsWith('https://www.google.com')) return false;
+  return true;
+}
+
 function buildCard(item) {
   const card = document.createElement('div');
   card.className = 'card';
 
-  const imagen = item.imagen;
-  if (imagen && !imagen.startsWith('data:') && !imagen.startsWith('https://www.google.com')) {
+  if (isValidImage(item.imagen)) {
     const wrap = document.createElement('div');
     wrap.className = 'card-img-wrap';
     const img = document.createElement('img');
     img.className = 'card-img';
-    img.src = imagen;
+    img.src = item.imagen;
     img.alt = item.nombre;
     img.onerror = () => wrap.remove();
     wrap.appendChild(img);
@@ -113,8 +121,7 @@ function buildCard(item) {
 
   const price = document.createElement('span');
   price.className = 'card-price';
-  const basePrice = item.variantes?.[0]?.precio ?? item.precio_final ?? 0;
-  price.textContent = formatPrice(basePrice);
+  price.textContent = formatPrice(item.variantes?.[0]?.precio ?? item.precio_final ?? 0);
 
   const btn = document.createElement('button');
   btn.className = 'add-btn';
@@ -128,12 +135,23 @@ function buildCard(item) {
   return card;
 }
 
+// ── CARRITO ──────────────────────────────────────────────────
+
 function addToCart(item) {
   const key = item.id;
   if (cart[key]) cart[key].qty++;
   else cart[key] = { nombre: item.nombre, precio: item.precio_final ?? 0, qty: 1 };
   updateCartCount();
   showToast(`${item.nombre} agregado`);
+}
+
+function removeFromCart(id) {
+  if (!cart[id]) return;
+  cart[id].qty--;
+  if (cart[id].qty === 0) delete cart[id];
+  updateCartCount();
+  renderCartItems();
+  updateWaLink();
 }
 
 function updateCartCount() {
@@ -148,6 +166,11 @@ function updateCartCount() {
 }
 
 function openCart() {
+  // Restaurar estado visual del toggle
+  document.getElementById('opt-retiro').classList.toggle('active', !isDelivery);
+  document.getElementById('opt-delivery').classList.toggle('active', isDelivery);
+  document.getElementById('delivery-address').style.display = isDelivery ? 'block' : 'none';
+
   renderCartItems();
   updateWaLink();
   document.getElementById('overlay').classList.add('open');
@@ -170,11 +193,13 @@ function setDelivery(val) {
   updateWaLink();
 }
 
+// ── RENDER CARRITO ───────────────────────────────────────────
+
 function getDeliveryCost() {
   const costo = ENTREGA?.delivery?.costo;
   if (!costo) return null;
   if (costo.tipo === 'fijo') return costo.valor;
-  return null; // zona u otro = a convenir
+  return null;
 }
 
 function renderCartItems() {
@@ -189,10 +214,10 @@ function renderCartItems() {
   }
 
   container.innerHTML = '';
-
-  // Items
   let subtotal = 0;
-  items.forEach(({ nombre, precio, qty }) => {
+
+  // Filas de productos
+  items.forEach(({ id, nombre, precio, qty }) => {
     const s = precio * qty;
     subtotal += s;
     const row = document.createElement('div');
@@ -202,21 +227,26 @@ function renderCartItems() {
         <div class="cart-row-name">${nombre}</div>
         <div class="cart-row-sub">x${qty}</div>
       </div>
-      <div class="cart-row-price">${formatPrice(s)}</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button onclick="removeFromCart('${id}')" style="background:none;border:1.5px solid #e5e7eb;border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:1.1rem;color:#6b7280;line-height:1">−</button>
+        <div class="cart-row-price">${formatPrice(s)}</div>
+      </div>
     `;
     container.appendChild(row);
   });
 
-  // Subtotal row
+  // Subtotal — sin color naranja
   const subtotalRow = document.createElement('div');
   subtotalRow.className = 'cart-row';
+  subtotalRow.style.borderTop = '1px solid #e5e7eb';
+  subtotalRow.style.marginTop = '4px';
   subtotalRow.innerHTML = `
-    <div class="cart-row-info"><div class="cart-row-name">Subtotal</div></div>
-    <div class="cart-row-price">${formatPrice(subtotal)}</div>
+    <div class="cart-row-info"><div class="cart-row-name" style="color:#6b7280;font-weight:600">Subtotal</div></div>
+    <div class="cart-row-price" style="color:#111827">${formatPrice(subtotal)}</div>
   `;
   container.appendChild(subtotalRow);
 
-  // Delivery row
+  // Envío
   let total = subtotal;
   if (isDelivery) {
     const costVal = getDeliveryCost();
@@ -225,23 +255,27 @@ function renderCartItems() {
     if (costVal !== null) {
       total += costVal;
       deliveryRow.innerHTML = `
-        <div class="cart-row-info"><div class="cart-row-name">🛵 Envío</div></div>
-        <div class="cart-row-price">${formatPrice(costVal)}</div>
+        <div class="cart-row-info"><div class="cart-row-name" style="color:#6b7280">Envío</div></div>
+        <div class="cart-row-price" style="color:#111827">${formatPrice(costVal)}</div>
       `;
     } else {
       deliveryRow.innerHTML = `
-        <div class="cart-row-info"><div class="cart-row-name">🛵 Envío</div></div>
-        <div class="cart-row-price">a convenir</div>
+        <div class="cart-row-info"><div class="cart-row-name" style="color:#6b7280">Envío</div></div>
+        <div style="font-size:.85rem;font-weight:600;color:#6b7280">a convenir</div>
       `;
     }
     container.appendChild(deliveryRow);
   }
 
   // Total
-  const totalLabel = isDelivery && getDeliveryCost() === null ? 'Total (+ envío a convenir)' : 'Total';
+  const totalLabel = isDelivery && getDeliveryCost() === null
+    ? 'Total (+ envío a convenir)'
+    : 'Total';
   document.getElementById('cart-total-label').textContent = totalLabel;
   document.getElementById('cart-total').textContent = formatPrice(total);
 }
+
+// ── WHATSAPP ─────────────────────────────────────────────────
 
 function updateWaLink() {
   const items = Object.entries(cart).map(([, v]) => `• ${v.nombre} x${v.qty} = ${formatPrice(v.precio * v.qty)}`);
@@ -249,33 +283,38 @@ function updateWaLink() {
 
   const subtotal = Object.values(cart).reduce((s, v) => s + v.precio * v.qty, 0);
   const costVal  = getDeliveryCost();
-
   let entregaLinea = '';
   let total = subtotal;
 
   if (isDelivery) {
     if (costVal !== null) {
       total += costVal;
-      entregaLinea = `\n🛵 Envío: ${formatPrice(costVal)}`;
+      entregaLinea = `\nEnvio: ${formatPrice(costVal)}`;
     } else {
-      entregaLinea = `\n🛵 Envío: a convenir`;
+      entregaLinea = `\nEnvio: a convenir`;
     }
     const address = document.getElementById('address-input')?.value;
-    if (address) entregaLinea += `\n📍 Dirección: ${address}`;
+    if (address) entregaLinea += `\nDireccion: ${address}`;
   } else {
-    entregaLinea = `\n🏪 Retiro en local`;
+    entregaLinea = `\nRetiro en local`;
   }
 
+  const totalLinea = isDelivery && costVal === null
+    ? ''
+    : `\nTotal: ${formatPrice(total)}`;
+
   const msg =
-    `Hola ${NOMBRE}, vengo de ÍndiceIA 🤖 y quiero hacer un pedido:\n\n` +
+    `Hola ${NOMBRE}, vengo de Indiceia y quiero hacer un pedido:\n\n` +
     `${items.join('\n')}\n\n` +
-    `💰 Subtotal: ${formatPrice(subtotal)}` +
+    `Subtotal: ${formatPrice(subtotal)}` +
     entregaLinea +
-    (isDelivery && costVal !== null ? `\n✅ Total: ${formatPrice(total)}` : '');
+    totalLinea;
 
   const link = document.getElementById('wa-btn');
   if (link) link.href = `https://wa.me/54${WHATSAPP}?text=${encodeURIComponent(msg)}`;
 }
+
+// ── TOAST ────────────────────────────────────────────────────
 
 function showToast(msg) {
   const toast = document.getElementById('toast');
@@ -284,6 +323,8 @@ function showToast(msg) {
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 2000);
 }
+
+// ── UTILS ────────────────────────────────────────────────────
 
 function formatPrice(n) {
   return '$' + Number(n).toLocaleString('es-AR');
