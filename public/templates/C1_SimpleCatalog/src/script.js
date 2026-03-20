@@ -2,50 +2,72 @@
 //  C1_SimpleCatalog — script.js
 // ============================================================
 
-// ── Datos (se sobreescriben en init desde window.__DATA__)
 let NOMBRE   = '';
 let WHATSAPP = '';
-
-// ── State ──
-let GOODS = [];
-const cart = {};
+let GOODS    = [];
+const cart   = {};
 const selectedVariants = {};
 let isDelivery = false;
 
-// ── Init ──
 document.addEventListener('DOMContentLoaded', init);
 
 function init() {
+  console.log('✅ DOMContentLoaded — init arrancó');
+  console.log('📦 window.__DATA__:', window.__DATA__);
+
   GOODS    = loadData();
   NOMBRE   = window.__DATA__?.nombre   || '';
   WHATSAPP = window.__DATA__?.whatsapp || '';
-  document.getElementById('header-title').textContent = NOMBRE;
+
+  console.log('🏪 NOMBRE:', NOMBRE);
+  console.log('📱 WHATSAPP:', WHATSAPP);
+  console.log('🛒 GOODS cantidad:', GOODS.length);
+  console.log('🛒 GOODS:', GOODS);
+
+  const headerEl = document.getElementById('header-title');
+  console.log('🔍 header-title element:', headerEl);
+  if (headerEl) headerEl.textContent = NOMBRE;
+
   buildTabs();
   buildSections();
   updateCartCount();
+
+  console.log('✅ init terminó');
 }
 
-// ── DATA ──
 function loadData() {
-  // nueva arquitectura: window.__DATA__ inyectado por indiceia-public
-  if (window.__DATA__?.goods) return window.__DATA__.goods;
-  // fallback legacy: tag __DATA__ base64
+  console.log('🔍 loadData — chequeando window.__DATA__:', window.__DATA__);
+
+  if (window.__DATA__?.goods) {
+    console.log('✅ datos desde window.__DATA__');
+    return window.__DATA__.goods;
+  }
+
+  console.warn('⚠️ window.__DATA__ no tiene goods, probando fallback...');
+
   try {
     const el = document.getElementById('__DATA__');
-    if (el?.textContent) return JSON.parse(atob(el.textContent));
+    console.log('🔍 tag __DATA__:', el);
+    if (el?.textContent) {
+      const parsed = JSON.parse(atob(el.textContent));
+      console.log('✅ datos desde tag __DATA__ base64:', parsed);
+      return parsed;
+    }
   } catch (e) {
-    console.error('DATA ERROR', e);
+    console.error('❌ DATA ERROR:', e);
   }
+
+  console.error('❌ no hay datos de ningún lado');
   return [];
 }
 
-// ── Categorías ──
 function getCategories() {
   return [...new Set(GOODS.map(g => g.categoria || 'General'))];
 }
 
 function buildTabs() {
   const categories = getCategories();
+  console.log('🗂 categorías:', categories);
   const tabsEl = document.getElementById('tabs');
   tabsEl.innerHTML = '';
   categories.forEach((cat, i) => {
@@ -62,6 +84,7 @@ function buildSections() {
   const main = document.getElementById('main');
   main.innerHTML = '';
   categories.forEach((cat, i) => {
+    console.log(`🏗 buildSection: ${cat}`);
     const section = document.createElement('div');
     section.className = 'section' + (i === 0 ? ' active' : '');
     const title = document.createElement('div');
@@ -70,9 +93,9 @@ function buildSections() {
     section.appendChild(title);
     const grid = document.createElement('div');
     grid.className = 'grid';
-    GOODS
-      .filter(g => (g.categoria || 'General') === cat)
-      .forEach(item => grid.appendChild(buildCard(item)));
+    const items = GOODS.filter(g => (g.categoria || 'General') === cat);
+    console.log(`📋 items en ${cat}:`, items.length);
+    items.forEach(item => grid.appendChild(buildCard(item)));
     section.appendChild(grid);
     main.appendChild(section);
   });
@@ -89,8 +112,8 @@ function switchTab(cat, btn) {
   btn?.scrollIntoView({ behavior: 'smooth', inline: 'center' });
 }
 
-// ── Card ──
 function buildCard(item) {
+  console.log('🃏 buildCard:', item.nombre);
   const card = document.createElement('div');
   card.className = 'card';
   const body = document.createElement('div');
@@ -114,7 +137,6 @@ function buildCard(item) {
   return card;
 }
 
-// ── Cart ──
 function addToCart(item) {
   const key = item.id;
   if (cart[key]) cart[key].qty++;
@@ -127,7 +149,6 @@ function updateCartCount() {
   document.getElementById('cart-count').textContent = total;
 }
 
-// ── Helpers ──
 function formatPrice(n) {
   return '$' + Number(n).toLocaleString('es-AR');
 }
