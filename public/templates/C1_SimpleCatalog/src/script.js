@@ -5,16 +5,20 @@
 let NOMBRE   = '';
 let WHATSAPP = '';
 let GOODS    = [];
+let ENTREGA  = null;
 const cart   = {};
 let isDelivery = false;
+
+let _data = null;
 
 document.addEventListener('DOMContentLoaded', init);
 
 function init() {
-  const data = JSON.parse(document.getElementById('__DATA__').textContent);
-  GOODS    = data.goods || [];
-  NOMBRE   = data.nombre   || '';
-  WHATSAPP = data.whatsapp || '';
+  _data    = JSON.parse(document.getElementById('__DATA__').textContent);
+  GOODS    = _data.goods    || [];
+  NOMBRE   = _data.nombre   || '';
+  WHATSAPP = _data.whatsapp || '';
+  ENTREGA  = _data.entrega  || null;
 
   const headerEl = document.getElementById('header-title');
   if (headerEl) headerEl.textContent = NOMBRE;
@@ -76,7 +80,6 @@ function buildCard(item) {
   const card = document.createElement('div');
   card.className = 'card';
 
-  // Imagen
   const imagen = item.imagen;
   if (imagen && !imagen.startsWith('data:') && !imagen.startsWith('https://www.google.com')) {
     const wrap = document.createElement('div');
@@ -163,7 +166,15 @@ function setDelivery(val) {
   document.getElementById('opt-retiro').classList.toggle('active', !val);
   document.getElementById('opt-delivery').classList.toggle('active', val);
   document.getElementById('delivery-address').style.display = val ? 'block' : 'none';
+  renderCartItems();
   updateWaLink();
+}
+
+function getDeliveryCost() {
+  const costo = ENTREGA?.delivery?.costo;
+  if (!costo) return null;
+  if (costo.tipo === 'fijo') return costo.valor;
+  return null; // zona u otro = a convenir
 }
 
 function renderCartItems() {
@@ -173,14 +184,17 @@ function renderCartItems() {
   if (!items.length) {
     container.innerHTML = '<p class="cart-empty">Todavía no agregaste nada 🛒</p>';
     document.getElementById('cart-total').textContent = formatPrice(0);
+    document.getElementById('cart-total-label').textContent = 'Total';
     return;
   }
 
   container.innerHTML = '';
-  let total = 0;
+
+  // Items
+  let subtotal = 0;
   items.forEach(({ nombre, precio, qty }) => {
-    const subtotal = precio * qty;
-    total += subtotal;
+    const s = precio * qty;
+    subtotal += s;
     const row = document.createElement('div');
     row.className = 'cart-row';
     row.innerHTML = `
@@ -188,11 +202,44 @@ function renderCartItems() {
         <div class="cart-row-name">${nombre}</div>
         <div class="cart-row-sub">x${qty}</div>
       </div>
-      <div class="cart-row-price">${formatPrice(subtotal)}</div>
+      <div class="cart-row-price">${formatPrice(s)}</div>
     `;
     container.appendChild(row);
   });
 
+  // Subtotal row
+  const subtotalRow = document.createElement('div');
+  subtotalRow.className = 'cart-row';
+  subtotalRow.innerHTML = `
+    <div class="cart-row-info"><div class="cart-row-name">Subtotal</div></div>
+    <div class="cart-row-price">${formatPrice(subtotal)}</div>
+  `;
+  container.appendChild(subtotalRow);
+
+  // Delivery row
+  let total = subtotal;
+  if (isDelivery) {
+    const costVal = getDeliveryCost();
+    const deliveryRow = document.createElement('div');
+    deliveryRow.className = 'cart-row';
+    if (costVal !== null) {
+      total += costVal;
+      deliveryRow.innerHTML = `
+        <div class="cart-row-info"><div class="cart-row-name">🛵 Envío</div></div>
+        <div class="cart-row-price">${formatPrice(costVal)}</div>
+      `;
+    } else {
+      deliveryRow.innerHTML = `
+        <div class="cart-row-info"><div class="cart-row-name">🛵 Envío</div></div>
+        <div class="cart-row-price">a convenir</div>
+      `;
+    }
+    container.appendChild(deliveryRow);
+  }
+
+  // Total
+  const totalLabel = isDelivery && getDeliveryCost() === null ? 'Total (+ envío a convenir)' : 'Total';
+  document.getElementById('cart-total-label').textContent = totalLabel;
   document.getElementById('cart-total').textContent = formatPrice(total);
 }
 
@@ -200,9 +247,31 @@ function updateWaLink() {
   const items = Object.entries(cart).map(([, v]) => `• ${v.nombre} x${v.qty} = ${formatPrice(v.precio * v.qty)}`);
   if (!items.length) return;
 
-  const total = Object.values(cart).reduce((s, v) => s + v.precio * v.qty, 0);
-  const address = isDelivery ? `\n📍 Dirección: ${document.getElementById('address-input')?.value || '(no ingresada)'}` : '\n🏪 Retiro en local';
-  const msg = `Hola ${NOMBRE}, quiero hacer un pedido:\n\n${items.join('\n')}\n\n💰 Total: ${formatPrice(total)}${address}`;
+  const subtotal = Object.values(cart).reduce((s, v) => s + v.precio * v.qty, 0);
+  const costVal  = getDeliveryCost();
+
+  let entregaLinea = '';
+  let total = subtotal;
+
+  if (isDelivery) {
+    if (costVal !== null) {
+      total += costVal;
+      entregaLinea = `\n🛵 Envío: ${formatPrice(costVal)}`;
+    } else {
+      entregaLinea = `\n🛵 Envío: a convenir`;
+    }
+    const address = document.getElementById('address-input')?.value;
+    if (address) entregaLinea += `\n📍 Dirección: ${address}`;
+  } else {
+    entregaLinea = `\n🏪 Retiro en local`;
+  }
+
+  const msg =
+    `Hola ${NOMBRE}, vengo de ÍndiceIA 🤖 y quiero hacer un pedido:\n\n` +
+    `${items.join('\n')}\n\n` +
+    `💰 Subtotal: ${formatPrice(subtotal)}` +
+    entregaLinea +
+    (isDelivery && costVal !== null ? `\n✅ Total: ${formatPrice(total)}` : '');
 
   const link = document.getElementById('wa-btn');
   if (link) link.href = `https://wa.me/54${WHATSAPP}?text=${encodeURIComponent(msg)}`;
