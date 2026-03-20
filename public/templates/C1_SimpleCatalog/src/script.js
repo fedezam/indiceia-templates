@@ -8,7 +8,11 @@ const WHATSAPP = '{{WHATSAPP}}';
 
 // 🧠 DATA desde <script type="application/json">
 const dataEl = document.getElementById('__DATA__');
-const GOODS = dataEl ? JSON.parse(dataEl.textContent) : [];
+const dataEl = document.getElementById('__DATA__');
+
+const GOODS = dataEl
+  ? JSON.parse(atob(dataEl.textContent))
+  : [];
 
 // 🧠 Delivery seguro (evita romper JS)
 const RAW_DELIVERY_COSTO = '{{DELIVERY_COSTO}}';
