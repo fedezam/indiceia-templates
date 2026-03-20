@@ -51,7 +51,7 @@ function loadData() {
     if (el?.textContent) {
       const parsed = JSON.parse(el.textContent);
       console.log('✅ datos desde tag __DATA__ base64:', parsed);
-      return parsed;
+      return parsed.goods || parsed;
     }
   } catch (e) {
     console.error('❌ DATA ERROR:', e);
