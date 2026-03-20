@@ -1,37 +1,39 @@
 // ============================================================
-//  C1_SimpleCatalog — script.js
+//  C1_SimpleCatalog — script.js (FIXED)
 // ============================================================
 
-// 🔐 Datos seguros (sin romper JS)
+// 🔐 Datos
 const NOMBRE   = '{{NOMBRE_COMERCIO}}';
 const WHATSAPP = '{{WHATSAPP}}';
 
-// 🧠 DATA desde <script type="application/json">
-const dataEl = document.getElementById('__DATA__');
-
-const GOODS = dataEl
-  ? JSON.parse(atob(dataEl.textContent))
-  : [];
-
-// 🧠 Delivery seguro (evita romper JS)
-const RAW_DELIVERY_COSTO = '{{DELIVERY_COSTO}}';
-const DELIVERY_COSTO = RAW_DELIVERY_COSTO === 'null'
-  ? null
-  : Number(RAW_DELIVERY_COSTO);
-
 // ── State ──
-const cart             = {};
+let GOODS = [];
+const cart = {};
 const selectedVariants = {};
-let isDelivery         = false;
+let isDelivery = false;
 
 // ── Init ──
 document.addEventListener('DOMContentLoaded', init);
 
 function init() {
+  GOODS = loadData();
+
   document.getElementById('header-title').textContent = NOMBRE;
   buildTabs();
   buildSections();
   updateCartCount();
+}
+
+// ── DATA SAFE ──
+function loadData() {
+  try {
+    const el = document.getElementById('__DATA__');
+    if (!el || !el.textContent) return [];
+    return JSON.parse(atob(el.textContent));
+  } catch (e) {
+    console.error('DATA ERROR', e);
+    return [];
+  }
 }
 
 // ── Categorías ──
@@ -48,8 +50,6 @@ function buildTabs() {
     const btn = document.createElement('button');
     btn.className = 'tab' + (i === 0 ? ' active' : '');
     btn.textContent = cat;
-    btn.setAttribute('role', 'tab');
-    btn.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
     btn.onclick = () => switchTab(cat, btn);
     tabsEl.appendChild(btn);
   });
@@ -63,8 +63,6 @@ function buildSections() {
   categories.forEach((cat, i) => {
     const section = document.createElement('div');
     section.className = 'section' + (i === 0 ? ' active' : '');
-    section.id = 'section-' + i;
-    section.setAttribute('role', 'tabpanel');
 
     const title = document.createElement('div');
     title.className = 'section-title';
@@ -87,41 +85,20 @@ function switchTab(cat, btn) {
   const categories = getCategories();
 
   document.querySelectorAll('.tab').forEach((t, i) => {
-    const isActive = categories[i] === cat;
-    t.classList.toggle('active', isActive);
-    t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    t.classList.toggle('active', categories[i] === cat);
   });
 
   document.querySelectorAll('.section').forEach((s, i) => {
     s.classList.toggle('active', categories[i] === cat);
   });
 
-  btn?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  btn?.scrollIntoView({ behavior: 'smooth', inline: 'center' });
 }
 
-// ── Card builder ──
+// ── Card ──
 function buildCard(item) {
   const card = document.createElement('div');
   card.className = 'card';
-
-  const imgWrap = document.createElement('div');
-  imgWrap.className = 'card-img-wrap';
-
-  if (item.imagen) {
-    const img = document.createElement('img');
-    img.className = 'card-img';
-    img.src = item.imagen;
-    img.alt = item.nombre;
-    img.loading = 'lazy';
-    img.onerror = () => {
-      imgWrap.innerHTML = `<div class="card-no-img">🏪</div>`;
-    };
-    imgWrap.appendChild(img);
-  } else {
-    imgWrap.innerHTML = `<div class="card-no-img">🏪</div>`;
-  }
-
-  card.appendChild(imgWrap);
 
   const body = document.createElement('div');
   body.className = 'card-body';
@@ -131,68 +108,31 @@ function buildCard(item) {
   name.textContent = item.nombre;
   body.appendChild(name);
 
-  if (item.descripcion) {
-    const desc = document.createElement('div');
-    desc.className = 'card-desc';
-    desc.textContent = item.descripcion;
-    body.appendChild(desc);
-  }
-
-  if (item.variantes && item.variantes.length > 1) {
-    selectedVariants[item.id] = item.variantes[0];
-
-    const varRow = document.createElement('div');
-    varRow.className = 'card-variants';
-
-    item.variantes.forEach((v, i) => {
-      const chip = document.createElement('button');
-      chip.className = 'variant-chip' + (i === 0 ? ' active' : '');
-      chip.textContent = v.label;
-      chip.onclick = (e) => {
-        e.stopPropagation();
-        selectedVariants[item.id] = v;
-      };
-      varRow.appendChild(chip);
-    });
-
-    body.appendChild(varRow);
-  }
-
   const footer = document.createElement('div');
   footer.className = 'card-footer';
 
   const price = document.createElement('span');
-  price.className = 'card-price';
   const basePrice = item.variantes?.[0]?.precio ?? item.precio_final ?? 0;
   price.textContent = formatPrice(basePrice);
 
-  const addBtn = document.createElement('button');
-  addBtn.className = 'add-btn';
-  addBtn.innerHTML = '+';
-  addBtn.onclick = (e) => {
-    e.stopPropagation();
-    addToCart(item);
-  };
+  const btn = document.createElement('button');
+  btn.textContent = '+';
+  btn.onclick = () => addToCart(item);
 
   footer.appendChild(price);
-  footer.appendChild(addBtn);
+  footer.appendChild(btn);
   body.appendChild(footer);
-  card.appendChild(body);
 
+  card.appendChild(body);
   return card;
 }
 
 // ── Cart ──
 function addToCart(item) {
-  const variant = selectedVariants[item.id] || null;
-  const precio  = variant ? variant.precio : (item.precio_final ?? 0);
-  const key     = item.id + (variant ? '_' + variant.id : '');
+  const key = item.id;
 
-  if (cart[key]) {
-    cart[key].qty++;
-  } else {
-    cart[key] = { key, precio, qty: 1 };
-  }
+  if (cart[key]) cart[key].qty++;
+  else cart[key] = { precio: item.precio_final ?? 0, qty: 1 };
 
   updateCartCount();
 }
