@@ -5,7 +5,9 @@
 
 const NOMBRE         = '{{NOMBRE_COMERCIO}}';
 const WHATSAPP       = '{{WHATSAPP}}';
-const GOODS          = {{GOODS}};
+const GOODS = JSON.parse(
+  document.getElementById('__DATA__').textContent
+);
 const DELIVERY_COSTO = {{DELIVERY_COSTO}};  // número o null
 
 // ── State ──
