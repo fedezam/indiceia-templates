@@ -8,7 +8,6 @@ const WHATSAPP = '{{WHATSAPP}}';
 
 // 🧠 DATA desde <script type="application/json">
 const dataEl = document.getElementById('__DATA__');
-const dataEl = document.getElementById('__DATA__');
 
 const GOODS = dataEl
   ? JSON.parse(atob(dataEl.textContent))
