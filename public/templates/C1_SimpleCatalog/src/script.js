@@ -49,7 +49,7 @@ function loadData() {
     const el = document.getElementById('__DATA__');
     console.log('🔍 tag __DATA__:', el);
     if (el?.textContent) {
-      const parsed = JSON.parse(atob(el.textContent));
+      const parsed = JSON.parse(el.textContent);
       console.log('✅ datos desde tag __DATA__ base64:', parsed);
       return parsed;
     }
