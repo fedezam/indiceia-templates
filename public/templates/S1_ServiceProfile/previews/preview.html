@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Preview — S1_ServiceProfile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink:#1a1a1a; --ink-soft:#555; --ink-mute:#999;
+  --bg:#f7f4ef; --bg-card:#ffffff;
+  --accent:#2d6a4f; --accent-lt:#d8f3dc; --accent-dk:#1b4332;
+  --wa:#25d366; --radius:16px; --shadow:0 2px 20px rgba(0,0,0,0.07);
+}
+html { scroll-behavior: smooth; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; padding-bottom:100px; }
+.hero { background:var(--accent-dk); color:#fff; padding:48px 24px 64px; position:relative; overflow:hidden; }
+.hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 80% 0%,rgba(45,106,79,0.6) 0%,transparent 70%); pointer-events:none; }
+.hero-inner { position:relative; max-width:480px; margin:0 auto; }
+.hero-badge { display:inline-block; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.25); color:#fff; font-size:12px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; padding:4px 12px; border-radius:99px; margin-bottom:16px; }
+.hero h1 { font-family:'Fraunces',serif; font-size:clamp(32px,8vw,48px); font-weight:700; line-height:1.1; margin-bottom:8px; }
+.hero-sub { font-size:16px; opacity:0.8; margin-bottom:24px; font-weight:300; }
+.hero-meta { display:flex; flex-wrap:wrap; gap:12px; }
+.hero-chip { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); color:#fff; font-size:13px; padding:6px 12px; border-radius:99px; }
+.wave { display:block; margin-top:-2px; background:var(--accent-dk); }
+.section { max-width:480px; margin:0 auto; padding:32px 20px 0; }
+.section-title { font-family:'Fraunces',serif; font-size:22px; font-weight:700; color:var(--ink); margin-bottom:16px; display:flex; align-items:center; gap:10px; }
+.section-title::after { content:''; flex:1; height:1px; background:rgba(0,0,0,0.08); }
+.services-list { display:flex; flex-direction:column; gap:12px; }
+.service-card { background:var(--bg-card); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px; cursor:pointer; transition:transform 0.2s,box-shadow 0.2s; border:2px solid transparent; position:relative; overflow:hidden; animation:fadeUp 0.4s ease both; }
+.service-card:nth-child(1){animation-delay:.05s}.service-card:nth-child(2){animation-delay:.1s}.service-card:nth-child(3){animation-delay:.15s}
+.service-card::before { content:''; position:absolute; left:0;top:0;bottom:0; width:4px; background:var(--accent); opacity:0; transition:opacity 0.2s; }
+.service-card.selected { border-color:var(--accent); background:#f0faf3; }
+.service-card.selected::before { opacity:1; }
+.service-header { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:8px; }
+.service-name { font-size:16px; font-weight:600; color:var(--ink); line-height:1.3; }
+.service-price { font-family:'Fraunces',serif; font-size:18px; font-weight:700; color:var(--accent); white-space:nowrap; }
+.service-price.consultar { font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; color:var(--ink-mute); background:#f0f0f0; padding:3px 10px; border-radius:99px; }
+.service-desc { font-size:14px; color:var(--ink-soft); line-height:1.5; margin-bottom:12px; }
+.service-tags { display:flex; flex-wrap:wrap; gap:6px; }
+.service-tag { font-size:11px; font-weight:500; padding:3px 10px; border-radius:99px; letter-spacing:0.02em; }
+.tag-modalidad { background:var(--accent-lt); color:var(--accent-dk); }
+.tag-disponibilidad { background:#fff3cd; color:#856404; }
+.service-select-indicator { width:22px;height:22px;border-radius:50%;border:2px solid #ddd;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;transition:all 0.2s; }
+.service-card.selected .service-select-indicator { background:var(--accent);border-color:var(--accent); }
+.service-card.selected .service-select-indicator::after { content:'';width:6px;height:10px;border-right:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(45deg) translate(-1px,-1px);display:block; }
+.gallery-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.gallery-item { aspect-ratio:1; border-radius:12px; overflow:hidden; cursor:pointer; background:#e8e8e8; }
+.gallery-item img { width:100%;height:100%;object-fit:cover;transition:transform 0.3s; }
+.gallery-item:hover img { transform:scale(1.05); }
+.lightbox { position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s; }
+.lightbox.open { opacity:1;pointer-events:all; }
+.lightbox img { max-width:92vw;max-height:85vh;border-radius:12px;object-fit:contain; }
+.lightbox-close { position:absolute;top:20px;right:20px;width:40px;height:40px;background:rgba(255,255,255,0.15);border:none;border-radius:50%;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center; }
+.horarios-grid { background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden; }
+.horario-row { display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid rgba(0,0,0,0.05);font-size:14px; }
+.horario-row:last-child { border-bottom:none; }
+.horario-dia { font-weight:500;color:var(--ink);text-transform:capitalize;width:90px; }
+.horario-dia.hoy { color:var(--accent);font-weight:600; }
+.horario-valor { color:var(--ink-soft);text-align:right; }
+.horario-cerrado { color:var(--ink-mute);font-style:italic; }
+.contact-card { background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px; }
+.contact-row { display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.05);font-size:14px;color:var(--ink-soft); }
+.contact-row:last-child { border-bottom:none; }
+.contact-icon { width:36px;height:36px;background:var(--accent-lt);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+.contact-icon svg { width:18px;height:18px;color:var(--accent); }
+.cta-float { position:fixed;bottom:0;left:0;right:0;padding:16px 20px;background:linear-gradient(to top,var(--bg) 60%,transparent);z-index:100; }
+.cta-btn { display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:480px;margin:0 auto;background:var(--wa);color:#fff;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;padding:16px 24px;border-radius:14px;border:none;cursor:pointer;text-decoration:none;box-shadow:0 4px 20px rgba(37,211,102,0.4);transition:transform 0.15s,box-shadow 0.15s; }
+.cta-btn svg { width:22px;height:22px; }
+.cta-sub { text-align:center;font-size:11px;color:var(--ink-mute);margin-top:6px;max-width:480px;margin-left:auto;margin-right:auto; }
+.selected-label { font-size:13px;color:var(--accent-dk);background:var(--accent-lt);padding:8px 16px;border-radius:10px;margin-bottom:12px;display:none;align-items:center;gap:6px;max-width:480px;margin-left:auto;margin-right:auto; }
+.selected-label.visible { display:flex; }
+.footer { text-align:center;padding:40px 20px 20px;font-size:12px;color:var(--ink-mute); }
+.footer a { color:var(--accent);text-decoration:none; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge" id="hero-badge">Plomero</div>
+    <h1 id="hero-nombre">Federico Zambrano</h1>
+    <p class="hero-sub" id="hero-sub">Instalaciones de agua y desagües pluviales</p>
+    <div class="hero-meta" id="hero-meta">
+      <div class="hero-chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Casilda y alrededores
+      </div>
+      <div class="hero-chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        5 años de experiencia
+      </div>
+    </div>
+  </div>
+</header>
+
+<svg class="wave" viewBox="0 0 1440 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0,40 L0,20 Q360,0 720,20 Q1080,40 1440,20 L1440,40 Z" fill="#1b4332"/>
+  <path d="M0,40 L0,28 Q360,8 720,28 Q1080,48 1440,28 L1440,40 Z" fill="#f7f4ef"/>
+</svg>
+
+<section class="section">
+  <h2 class="section-title">Servicios</h2>
+  <div class="services-list" id="services-list"></div>
+</section>
+
+<section class="section" id="gallery-section">
+  <h2 class="section-title">Trabajos realizados</h2>
+  <div class="gallery-grid" id="gallery-grid"></div>
+</section>
+
+<section class="section">
+  <h2 class="section-title">Horarios</h2>
+  <div class="horarios-grid" id="horarios-grid"></div>
+</section>
+
+<section class="section">
+  <h2 class="section-title">Contacto</h2>
+  <div class="contact-card"><div id="contact-rows"></div></div>
+</section>
+
+<footer class="footer">
+  <p>Powered by <a href="https://indiceia.app" target="_blank">ÍndiceIA</a></p>
+</footer>
+
+<div class="lightbox" id="lightbox" onclick="if(event.target===this)closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<div class="cta-float">
+  <div class="selected-label" id="selected-label"></div>
+  <a class="cta-btn" id="cta-btn" href="#" target="_blank">
+    <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    <span class="cta-label">Contactar por WhatsApp</span>
+  </a>
+  <p class="cta-sub">Responde por WhatsApp · Sin compromiso</p>
+</div>
+
+<script>
+const NOMBRE   = 'Federico Zambrano';
+const WHATSAPP = '5493412295316';
+
+const SERVICES = [
+  { id:'s1', nombre:'Instalación de agua', descripcion:'Servicio completo de instalaciones y reparación de agua domiciliaria. Incluye cañerías, griferías y conexiones.', modalidad:['a_domicilio'], disponibilidad:'a_coordinar', activo:true },
+  { id:'s2', nombre:'Desagües y cloacas', descripcion:'Instalación, mantenimiento y reparación de desagües cloacales y pluviales. Pozos sépticos y cloacas.', modalidad:['a_domicilio'], disponibilidad:'a_coordinar', activo:true },
+  { id:'s3', nombre:'Reparaciones urgentes', descripcion:'Pérdidas, cañerías rotas, piletas tapadas. Atención urgente a coordinar.', modalidad:['a_domicilio'], disponibilidad:'a_coordinar', activo:true },
+];
+
+const PROFILE = {
+  especialidad: 'Plomero',
+  descripcion:  'Instalaciones de agua y desagües pluviales',
+  experiencia:  '5 años',
+  ubicacion:    { zona: 'Casilda y alrededores', pais: 'Argentina' },
+  contacto:     { whatsapp: '5493412295316', email: 'fede@ejemplo.com' },
+  galeria:      [
+    'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&q=80',
+    'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=400&q=80',
+    'https://images.unsplash.com/photo-1542013936693-884638332954?w=400&q=80',
+    'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&q=80',
+    'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80',
+    'https://images.unsplash.com/photo-1467533003447-e295ff1b0435?w=400&q=80',
+  ],
+  horarios: {
+    lunes:     { closed:false, morning:{enabled:true,open:'08:00',close:'12:00'}, afternoon:{enabled:true,open:'15:00',close:'19:00'} },
+    martes:    { closed:false, morning:{enabled:true,open:'08:00',close:'12:00'}, afternoon:{enabled:true,open:'15:00',close:'19:00'} },
+    miercoles: { closed:false, morning:{enabled:true,open:'08:00',close:'12:00'}, afternoon:{enabled:true,open:'15:00',close:'19:00'} },
+    jueves:    { closed:false, morning:{enabled:true,open:'08:00',close:'12:00'}, afternoon:{enabled:true,open:'15:00',close:'19:00'} },
+    viernes:   { closed:false, morning:{enabled:true,open:'08:00',close:'12:00'}, afternoon:{enabled:true,open:'15:00',close:'19:00'} },
+    sabado:    { closed:false, morning:{enabled:true,open:'08:00',close:'12:00'}, afternoon:{enabled:false,open:'15:00',close:'19:00'} },
+    domingo:   { closed:true  },
+  }
+};
+
+let selectedService = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderServices();
+  renderGallery();
+  renderHorarios();
+  renderContacto();
+  updateCTA();
+});
+
+function renderServices() {
+  const list = document.getElementById('services-list');
+  SERVICES.filter(s=>s.activo!==false).forEach(svc => {
+    const card = document.createElement('div');
+    card.className = 'service-card';
+    const mLabels = { presencial:'En el local', a_domicilio:'A domicilio', remoto:'Online' };
+    const dLabels = { inmediata:'Sin turno', a_coordinar:'Con turno' };
+    const mods = (Array.isArray(svc.modalidad)?svc.modalidad:[svc.modalidad]).map(m=>mLabels[m]||m);
+    const disp = dLabels[svc.disponibilidad]||svc.disponibilidad||'';
+    const precio = svc.precio?.tipo==='fijo'
+      ? `<span class="service-price">$${svc.precio.valor.toLocaleString('es-AR')}</span>`
+      : `<span class="service-price consultar">A consultar</span>`;
+    card.innerHTML = `
+      <div class="service-header">
+        <div class="service-name">${svc.nombre}</div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">${precio}<div class="service-select-indicator"></div></div>
+      </div>
+      ${svc.descripcion?`<p class="service-desc">${svc.descripcion}</p>`:''}
+      <div class="service-tags">
+        ${mods.map(m=>`<span class="service-tag tag-modalidad">${m}</span>`).join('')}
+        ${disp?`<span class="service-tag tag-disponibilidad">${disp}</span>`:''}
+      </div>`;
+    card.addEventListener('click', () => selectService(svc, card));
+    list.appendChild(card);
+  });
+}
+
+function selectService(svc, card) {
+  document.querySelectorAll('.service-card').forEach(c=>c.classList.remove('selected'));
+  if (selectedService?.id===svc.id) { selectedService=null; updateSelectedLabel(null); updateCTA(); return; }
+  card.classList.add('selected');
+  selectedService = svc;
+  updateSelectedLabel(svc);
+  updateCTA();
+}
+
+function updateSelectedLabel(svc) {
+  const el = document.getElementById('selected-label');
+  if (!el) return;
+  if (svc) { el.textContent=`✓ Seleccionaste: ${svc.nombre}`; el.classList.add('visible'); }
+  else { el.classList.remove('visible'); }
+}
+
+function renderGallery() {
+  const grid = document.getElementById('gallery-grid');
+  const section = document.getElementById('gallery-section');
+  const fotos = PROFILE.galeria||[];
+  if (!fotos.length) { if(section) section.style.display='none'; return; }
+  fotos.forEach((url,i) => {
+    const item = document.createElement('div');
+    item.className = 'gallery-item';
+    item.innerHTML = `<img src="${url}" alt="Trabajo ${i+1}" loading="lazy">`;
+    item.addEventListener('click',()=>openLightbox(url));
+    grid.appendChild(item);
+  });
+}
+
+function openLightbox(url) {
+  const lb=document.getElementById('lightbox');
+  const img=document.getElementById('lightbox-img');
+  img.src=url; lb.classList.add('open'); document.body.style.overflow='hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function renderHorarios() {
+  const container = document.getElementById('horarios-grid');
+  const dias = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
+  const labels = {lunes:'Lunes',martes:'Martes',miercoles:'Miércoles',jueves:'Jueves',viernes:'Viernes',sabado:'Sábado',domingo:'Domingo'};
+  const hoy = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'][new Date().getDay()];
+  dias.forEach(dia => {
+    const h = PROFILE.horarios[dia];
+    if (!h) return;
+    const row = document.createElement('div');
+    row.className = 'horario-row';
+    const diaEl = document.createElement('div');
+    diaEl.className = 'horario-dia'+(dia===hoy?' hoy':'');
+    diaEl.textContent = labels[dia]+(dia===hoy?' ·':'');
+    const valEl = document.createElement('div');
+    valEl.className = 'horario-valor';
+    if (h.closed) { valEl.innerHTML='<span class="horario-cerrado">Cerrado</span>'; }
+    else {
+      const p=[];
+      if(h.morning?.enabled) p.push(`${h.morning.open} – ${h.morning.close}`);
+      if(h.afternoon?.enabled) p.push(`${h.afternoon.open} – ${h.afternoon.close}`);
+      valEl.textContent = p.join('  /  ');
+    }
+    row.appendChild(diaEl); row.appendChild(valEl); container.appendChild(row);
+  });
+}
+
+function renderContacto() {
+  const container = document.getElementById('contact-rows');
+  const c = PROFILE.contacto||{};
+  const iconPin=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+  const iconPhone=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12 19.79 19.79 0 0 1 1.08 3.4 2 2 0 0 1 3.07 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+  const iconMail=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`;
+  [
+    { icon:iconPin,   label:PROFILE.ubicacion?.zona },
+    { icon:iconPhone, label:c.whatsapp?`+${c.whatsapp}`:null },
+    { icon:iconMail,  label:c.email },
+  ].forEach(({icon,label}) => {
+    if(!label) return;
+    const row=document.createElement('div');
+    row.className='contact-row';
+    row.innerHTML=`<div class="contact-icon">${icon}</div><span>${label}</span>`;
+    container.appendChild(row);
+  });
+}
+
+function updateCTA() {
+  const btn = document.getElementById('cta-btn');
+  const svc = selectedService;
+  const msg = svc
+    ? `Hola ${NOMBRE}! Quiero consultar por el servicio: *${svc.nombre}*. ¿Podemos coordinar?`
+    : `Hola ${NOMBRE}! Vi tu perfil y quiero hacer una consulta.`;
+  btn.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
+  btn.querySelector('.cta-label').textContent = svc ? `Consultar por ${svc.nombre}` : 'Contactar por WhatsApp';
+}
+</script>
+</body>
+</html>
