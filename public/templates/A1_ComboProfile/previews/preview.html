@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Preview — A1_ComboProfile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1c1c1c;--ink-soft:#555;--ink-mute:#999;--bg:#f6f3ee;--bg-card:#fff;--accent:#8b3a2a;--accent-lt:#f5e6e2;--accent-dk:#5c1f12;--wa:#25d366;--nav-h:64px;--radius:14px;--shadow:0 2px 16px rgba(0,0,0,.06)}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:calc(var(--nav-h) + 24px)}
+.hero{position:relative;background:var(--ink);color:#fff;padding:52px 24px 48px;overflow:hidden}
+.hero-texture{position:absolute;inset:0;background-image:radial-gradient(circle at 20% 50%,rgba(139,58,42,.35) 0%,transparent 60%),radial-gradient(circle at 80% 20%,rgba(139,58,42,.2) 0%,transparent 50%);pointer-events:none}
+.hero-inner{position:relative;max-width:480px;margin:0 auto}
+.hero-eyebrow{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.hero-eyebrow::before{content:'';width:24px;height:1px;background:var(--accent);display:block}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(34px,9vw,52px);font-weight:900;line-height:1.05;margin-bottom:12px;letter-spacing:-.02em}
+.hero-desc{font-size:15px;font-weight:300;opacity:.7;line-height:1.6;margin-bottom:24px;max-width:320px}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px}
+.hero-pill{font-size:12px;font-weight:500;padding:5px 12px;border-radius:99px;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);display:flex;align-items:center;gap:5px}
+.hero-stats{display:flex;gap:24px;border-top:1px solid rgba(255,255,255,.1);padding-top:20px}
+.hero-stat{display:flex;flex-direction:column;gap:2px}
+.hero-stat-num{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#fff}
+.hero-stat-label{font-size:11px;font-weight:500;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:var(--bg-card);border-top:1px solid rgba(0,0,0,.08);display:flex;z-index:200;box-shadow:0 -4px 20px rgba(0,0,0,.06)}
+.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:none;border:none;cursor:pointer;color:var(--ink-mute);font-family:'Outfit',sans-serif;font-size:10px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;transition:color .2s;position:relative}
+.nav-tab.active{color:var(--accent)}
+.nav-tab.active::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:24px;height:2px;background:var(--accent);border-radius:0 0 2px 2px}
+.nav-tab svg{width:20px;height:20px}
+.nav-tab i{font-size:18px}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.section{max-width:480px;margin:0 auto;padding:28px 20px 0}
+.section-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px}
+.section-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink)}
+.section-count{font-size:12px;color:var(--ink-mute)}
+.cat-scroll{display:flex;gap:8px;overflow-x:auto;padding:0 0 16px;scrollbar-width:none;scroll-padding-inline:20px;-webkit-overflow-scrolling:touch}
+.cat-scroll::-webkit-scrollbar{display:none}
+.cat-scroll::before,.cat-scroll::after{content:'';flex-shrink:0;width:20px}
+.cat-btn{white-space:nowrap;padding:7px 16px;border-radius:99px;border:1.5px solid rgba(0,0,0,.1);background:var(--bg-card);font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;color:var(--ink-soft);cursor:pointer;transition:all .2s;flex-shrink:0}
+.cat-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.product-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:480px;margin:0 auto;padding:0 20px}
+.product-card{background:var(--bg-card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:transform .2s;animation:fadeUp .35s ease both}
+.product-card:active{transform:scale(.97)}
+.product-img{width:100%;aspect-ratio:1;object-fit:cover;background:#e8e5e0;display:block}
+.product-img-placeholder{width:100%;aspect-ratio:1;background:linear-gradient(135deg,#e8e5e0 0%,#d8d3cc 100%);display:flex;align-items:center;justify-content:center;color:#bbb;font-size:28px}
+.product-body{padding:12px}
+.product-name{font-size:13px;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.product-desc{font-size:11px;color:var(--ink-mute);margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.4}
+.product-footer{display:flex;align-items:center;justify-content:space-between}
+.product-price{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--accent)}
+.product-add{width:28px;height:28px;background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.cart-badge{position:absolute;top:6px;right:calc(50% - 18px);background:var(--accent);color:#fff;font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:none;align-items:center;justify-content:center}
+.cart-badge.visible{display:flex}
+.cart-sheet{position:fixed;inset:0;z-index:300;pointer-events:none}
+.cart-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;transition:opacity .3s}
+.cart-panel{position:absolute;bottom:0;left:0;right:0;background:var(--bg-card);border-radius:20px 20px 0 0;padding:20px 20px 32px;max-height:75vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);max-width:480px;margin:0 auto}
+.cart-sheet.open{pointer-events:all}
+.cart-sheet.open .cart-overlay{opacity:1}
+.cart-sheet.open .cart-panel{transform:translateY(0)}
+.cart-handle{width:36px;height:4px;background:#ddd;border-radius:99px;margin:0 auto 16px}
+.cart-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:16px}
+.cart-items{margin-bottom:16px}
+.cart-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,.05)}
+.cart-item-name{flex:1;font-size:14px;font-weight:500}
+.cart-item-controls{display:flex;align-items:center;gap:8px}
+.cart-qty-btn{width:24px;height:24px;border-radius:6px;border:1px solid rgba(0,0,0,.1);background:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.cart-qty{font-size:14px;font-weight:600;min-width:20px;text-align:center}
+.cart-item-price{font-size:14px;font-weight:600;color:var(--accent);min-width:60px;text-align:right}
+.cart-total{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:2px solid var(--ink);margin-bottom:16px}
+.cart-total-label{font-size:15px;font-weight:600}
+.cart-total-value{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--accent)}
+.cart-checkout-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:var(--wa);color:#fff;border:none;border-radius:12px;padding:16px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 4px 16px rgba(37,211,102,.35)}
+.services-list{display:flex;flex-direction:column;gap:12px;max-width:480px;margin:0 auto;padding:0 20px}
+.service-card{background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;cursor:pointer;border:2px solid transparent;transition:border-color .2s;animation:fadeUp .35s ease both}
+.service-card.selected{border-color:var(--accent)}
+.service-img{width:100%;height:140px;object-fit:cover;display:block}
+.service-body{padding:16px}
+.service-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
+.service-name{font-size:15px;font-weight:600;line-height:1.3}
+.service-price{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--accent);white-space:nowrap}
+.service-price.consultar{font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;color:var(--ink-mute);background:#f0f0f0;padding:3px 10px;border-radius:99px}
+.service-desc{font-size:13px;color:var(--ink-soft);line-height:1.5;margin-bottom:10px}
+.service-tags{display:flex;flex-wrap:wrap;gap:6px}
+.service-tag{font-size:11px;font-weight:500;padding:3px 10px;border-radius:99px}
+.tag-modalidad{background:var(--accent-lt);color:var(--accent-dk)}
+.tag-disp{background:#fef3c7;color:#92400e}
+.service-select-row{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid rgba(0,0,0,.06)}
+.service-select-btn{padding:7px 16px;border-radius:8px;border:1.5px solid var(--accent);background:none;color:var(--accent);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.service-card.selected .service-select-btn{background:var(--accent);color:#fff}
+.info-block{background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+.info-block-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;padding:14px 20px;border-bottom:1px solid rgba(0,0,0,.05);color:var(--ink)}
+.horario-row{display:flex;justify-content:space-between;padding:11px 20px;border-bottom:1px solid rgba(0,0,0,.04);font-size:13px}
+.horario-row:last-child{border-bottom:none}
+.horario-dia{font-weight:500;width:90px}
+.horario-dia.hoy{color:var(--accent);font-weight:600}
+.horario-valor{color:var(--ink-soft)}
+.horario-cerrado{color:var(--ink-mute);font-style:italic}
+.contact-row{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid rgba(0,0,0,.04);font-size:14px;color:var(--ink-soft)}
+.contact-row:last-child{border-bottom:none}
+.contact-icon{width:34px;height:34px;background:var(--accent-lt);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--accent)}
+.contact-icon svg{width:16px;height:16px}
+.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:480px;margin:0 auto;padding:0 20px 20px}
+.gallery-item{aspect-ratio:1;border-radius:8px;overflow:hidden;cursor:pointer}
+.gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.gallery-item:hover img{transform:scale(1.06)}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:400;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.lightbox.open{opacity:1;pointer-events:all}
+.lightbox img{max-width:92vw;max-height:85vh;border-radius:10px;object-fit:contain}
+.lightbox-close{position:absolute;top:20px;right:20px;width:40px;height:40px;background:rgba(255,255,255,.15);border:none;border-radius:50%;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.svc-cta{position:fixed;bottom:calc(var(--nav-h) + 12px);left:20px;right:20px;max-width:440px;margin:0 auto;z-index:150;display:none}
+.svc-cta.visible{display:block}
+.svc-cta-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:var(--wa);color:#fff;border:none;border-radius:12px;padding:15px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 4px 20px rgba(37,211,102,.4)}
+.cart-float-btn{position:fixed;bottom:calc(var(--nav-h) + 12px);right:20px;background:var(--accent);color:#fff;border:none;border-radius:14px;padding:12px 20px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:none;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(139,58,42,.35);z-index:150}
+.cart-float-btn.visible{display:flex}
+.cart-float-btn svg{width:18px;height:18px}
+.inicio-section{max-width:480px;margin:0 auto;padding:28px 20px 0}
+.quick-links{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
+.quick-link{background:var(--bg-card);border-radius:var(--radius);padding:20px 16px;display:flex;flex-direction:column;gap:8px;cursor:pointer;border:none;font-family:'Outfit',sans-serif;text-align:left;box-shadow:var(--shadow);transition:transform .2s}
+.quick-link:active{transform:scale(.97)}
+.quick-link-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.quick-link-icon.productos{background:var(--accent-lt);color:var(--accent)}
+.quick-link-icon.servicios{background:#e8f4fd;color:#1a6ea8}
+.quick-link-label{font-size:13px;font-weight:600;color:var(--ink)}
+.quick-link-count{font-size:12px;color:var(--ink-mute)}
+.wa-direct{display:flex;align-items:center;gap:12px;background:var(--bg-card);border-radius:var(--radius);padding:16px 20px;box-shadow:var(--shadow);text-decoration:none;margin-bottom:28px}
+.wa-direct-icon{width:42px;height:42px;background:#e8faf0;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--wa);font-size:20px}
+.wa-direct-text{flex:1}
+.wa-direct-label{font-size:14px;font-weight:600;color:var(--ink)}
+.wa-direct-sub{font-size:12px;color:var(--ink-mute)}
+.wa-direct-arrow{color:var(--ink-mute);font-size:16px}
+.footer{text-align:center;padding:32px 20px 16px;font-size:12px;color:var(--ink-mute)}
+.footer a{color:var(--accent);text-decoration:none}
+.empty-state{text-align:center;padding:48px 20px;color:var(--ink-mute);font-size:14px}
+.empty-state-icon{font-size:40px;margin-bottom:12px;opacity:.3}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-texture"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow" id="hero-eyebrow">Óptica</div>
+    <h1>Óptica Visión Clara</h1>
+    <p class="hero-desc">Lentes, armazones y exámenes visuales. Más de 20 años cuidando tu vista en Casilda.</p>
+    <div class="hero-pills">
+      <div class="hero-pill"><span>📍</span>Casilda, Santa Fe</div>
+      <div class="hero-pill"><span>⏱</span>20 años de experiencia</div>
+    </div>
+    <div class="hero-stats" id="hero-stats"></div>
+  </div>
+</header>
+
+<nav class="bottom-nav">
+  <button class="nav-tab active" data-tab="inicio" onclick="switchTab('inicio')">
+    <i class="fas fa-house"></i>
+    Inicio
+  </button>
+  <button class="nav-tab" data-tab="productos" onclick="switchTab('productos')">
+    <i class="fas fa-bag-shopping"></i>
+    <span class="cart-badge" id="cart-badge">0</span>
+    Productos
+  </button>
+  <button class="nav-tab" data-tab="servicios" onclick="switchTab('servicios')">
+    <i class="fas fa-wrench"></i>
+    Servicios
+  </button>
+  <button class="nav-tab" data-tab="info" onclick="switchTab('info')">
+    <i class="fas fa-circle-info"></i>
+    Info
+  </button>
+</nav>
+
+<!-- TAB INICIO -->
+<div class="tab-panel active" id="tab-inicio">
+  <div class="inicio-section">
+    <div class="quick-links">
+      <button class="quick-link" onclick="switchTab('productos')">
+        <div class="quick-link-icon productos">🛍</div>
+        <div class="quick-link-label">Productos</div>
+        <div class="quick-link-count">8 disponibles</div>
+      </button>
+      <button class="quick-link" onclick="switchTab('servicios')">
+        <div class="quick-link-icon servicios">🔧</div>
+        <div class="quick-link-label">Servicios</div>
+        <div class="quick-link-count">3 disponibles</div>
+      </button>
+    </div>
+    <a class="wa-direct" href="https://wa.me/5493412295316?text=Hola%20Óptica%20Visión%20Clara!%20Vi%20su%20perfil%20y%20quiero%20consultar." target="_blank">
+      <div class="wa-direct-icon">💬</div>
+      <div class="wa-direct-text">
+        <div class="wa-direct-label">Escribinos directo</div>
+        <div class="wa-direct-sub">Respondemos por WhatsApp</div>
+      </div>
+      <div class="wa-direct-arrow">›</div>
+    </a>
+  </div>
+  <footer class="footer"><p>Powered by <a href="https://indiceia.app" target="_blank">ÍndiceIA</a></p></footer>
+</div>
+
+<!-- TAB PRODUCTOS -->
+<div class="tab-panel" id="tab-productos">
+  <div class="cat-scroll" id="cat-scroll"></div>
+  <div class="section" style="padding-top:0">
+    <div class="section-header">
+      <span class="section-title">Productos</span>
+      <span class="section-count" id="prod-count"></span>
+    </div>
+  </div>
+  <div class="product-grid" id="product-grid"></div>
+  <footer class="footer"><p>Powered by <a href="https://indiceia.app" target="_blank">ÍndiceIA</a></p></footer>
+</div>
+
+<!-- TAB SERVICIOS -->
+<div class="tab-panel" id="tab-servicios">
+  <div class="section" style="padding-bottom:16px">
+    <div class="section-header">
+      <span class="section-title">Servicios</span>
+      <span class="section-count" id="svc-count"></span>
+    </div>
+  </div>
+  <div class="services-list" id="services-list"></div>
+  <footer class="footer" style="margin-bottom:80px"><p>Powered by <a href="https://indiceia.app" target="_blank">ÍndiceIA</a></p></footer>
+</div>
+
+<!-- TAB INFO -->
+<div class="tab-panel" id="tab-info">
+  <div class="section" style="padding-bottom:16px">
+    <div class="section-header"><span class="section-title">Información</span></div>
+  </div>
+  <div style="max-width:480px;margin:0 auto;padding:0 20px">
+    <div class="info-block">
+      <div class="info-block-title">Horarios</div>
+      <div id="horarios-rows"></div>
+    </div>
+    <div class="info-block">
+      <div class="info-block-title">Contacto</div>
+      <div id="contact-rows"></div>
+    </div>
+  </div>
+  <div id="gallery-section" style="display:none">
+    <div class="section" style="padding-bottom:12px">
+      <div class="section-header"><span class="section-title">Galería</span></div>
+    </div>
+    <div class="gallery-grid" id="gallery-grid"></div>
+  </div>
+  <footer class="footer"><p>Powered by <a href="https://indiceia.app" target="_blank">ÍndiceIA</a></p></footer>
+</div>
+
+<!-- CARRITO -->
+<div class="cart-sheet" id="cart-sheet">
+  <div class="cart-overlay" onclick="closeCart()"></div>
+  <div class="cart-panel">
+    <div class="cart-handle"></div>
+    <div class="cart-title">Tu pedido</div>
+    <div class="cart-items" id="cart-items"></div>
+    <div class="cart-total">
+      <span class="cart-total-label">Total</span>
+      <span class="cart-total-value" id="cart-total-value">$0</span>
+    </div>
+    <a class="cart-checkout-btn" id="cart-checkout" href="#" target="_blank">💬 Confirmar pedido por WhatsApp</a>
+  </div>
+</div>
+
+<!-- CTA SERVICIO -->
+<div class="svc-cta" id="svc-cta">
+  <a class="svc-cta-btn" id="svc-cta-btn" href="#" target="_blank">💬 <span id="svc-cta-label">Consultar por WhatsApp</span></a>
+</div>
+
+<!-- CARRITO FLOTANTE -->
+<button class="cart-float-btn" id="cart-float-btn" onclick="openCart()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+  <span id="cart-float-label">Ver pedido</span>
+</button>
+
+<div class="lightbox" id="lightbox" onclick="if(event.target===this)closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<script>
+const NOMBRE   = 'Óptica Visión Clara';
+const WHATSAPP = '5493412295316';
+
+const GOODS = [
+  { id:'p1', nombre:'Armazón Clásico Negro', descripcion:'Acetato italiano, unisex, varios talles', categoria:'Armazones', precio_final:18500, imagen:'https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=400&q=80', paused:false },
+  { id:'p2', nombre:'Armazón Carey Moderno', descripcion:'Tendencia 2024, diseño italiano', categoria:'Armazones', precio_final:24900, imagen:'https://images.unsplash.com/photo-1591076482161-42ce6da69f67?w=400&q=80', paused:false },
+  { id:'p3', nombre:'Lentes de Sol Polarizados', descripcion:'Protección UV400, montura metálica', categoria:'Sol', precio_final:15000, imagen:'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=400&q=80', paused:false },
+  { id:'p4', nombre:'Lentes de Sol Deportivos', descripcion:'Grip de goma, resistentes al agua', categoria:'Sol', precio_final:12500, imagen:'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&q=80', paused:false },
+  { id:'p5', nombre:'Solución para Lentes de Contacto', descripcion:'350ml, apta todo tipo de lente', categoria:'Contacto', precio_final:3200, imagen:'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&q=80', paused:false },
+  { id:'p6', nombre:'Estuche Rígido Premium', descripcion:'Protección total, varios colores', categoria:'Accesorios', precio_final:2800, imagen:'https://images.unsplash.com/photo-1509695507497-903c140c43b0?w=400&q=80', paused:false },
+  { id:'p7', nombre:'Armazón Infantil', descripcion:'Flexible, irrompible, colores vivos', categoria:'Niños', precio_final:9800, imagen:'https://images.unsplash.com/photo-1543349689-9a4d426bee8e?w=400&q=80', paused:false },
+  { id:'p8', nombre:'Limpiador de Lentes Spray', descripcion:'Con paño de microfibra incluido', categoria:'Accesorios', precio_final:1500, imagen:'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&q=80', paused:false },
+];
+
+const SERVICES = [
+  { id:'s1', nombre:'Examen Visual Completo', descripcion:'Evaluación de agudeza visual, fondo de ojo y prescripción actualizada. Incluye informe digital.', modalidad:['presencial'], disponibilidad:'a_coordinar', imagen:'https://images.unsplash.com/photo-1516069677018-378515003435?w=600&q=80', activo:true },
+  { id:'s2', nombre:'Adaptación de Lentes de Contacto', descripcion:'Prueba y selección del lente más adecuado para tu ojo. Primera consulta sin cargo adicional.', modalidad:['presencial'], disponibilidad:'a_coordinar', imagen:'https://images.unsplash.com/photo-1559757175-5700dde675bc?w=600&q=80', activo:true },
+  { id:'s3', nombre:'Reparación y Ajuste de Armazones', descripcion:'Soldadura, cambio de patillas, ajuste de plaquetas y limpieza ultrasónica.', modalidad:['presencial'], disponibilidad:'inmediata', imagen:'https://images.unsplash.com/photo-1486401899868-0e435ed85128?w=600&q=80', activo:true },
+];
+
+const PROFILE = {
+  especialidad: 'Óptica',
+  descripcion: 'Lentes, armazones y exámenes visuales. Más de 20 años cuidando tu vista.',
+  ubicacion: { zona: 'Casilda, Santa Fe' },
+  contacto: { whatsapp: '5493412295316', email: 'optica@ejemplo.com', instagram: '@opticavisionclaracasilda' },
+  horarios: {
+    lunes:     { closed:false, morning:{enabled:true,open:'09:00',close:'13:00'}, afternoon:{enabled:true,open:'16:00',close:'20:00'} },
+    martes:    { closed:false, morning:{enabled:true,open:'09:00',close:'13:00'}, afternoon:{enabled:true,open:'16:00',close:'20:00'} },
+    miercoles: { closed:false, morning:{enabled:true,open:'09:00',close:'13:00'}, afternoon:{enabled:true,open:'16:00',close:'20:00'} },
+    jueves:    { closed:false, morning:{enabled:true,open:'09:00',close:'13:00'}, afternoon:{enabled:true,open:'16:00',close:'20:00'} },
+    viernes:   { closed:false, morning:{enabled:true,open:'09:00',close:'13:00'}, afternoon:{enabled:true,open:'16:00',close:'20:00'} },
+    sabado:    { closed:false, morning:{enabled:true,open:'09:00',close:'13:00'}, afternoon:{enabled:false} },
+    domingo:   { closed:true },
+  },
+  galeria: [
+    'https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=400&q=80',
+    'https://images.unsplash.com/photo-1591076482161-42ce6da69f67?w=400&q=80',
+    'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=400&q=80',
+    'https://images.unsplash.com/photo-1516069677018-378515003435?w=400&q=80',
+    'https://images.unsplash.com/photo-1559757175-5700dde675bc?w=400&q=80',
+    'https://images.unsplash.com/photo-1486401899868-0e435ed85128?w=400&q=80',
+  ]
+};
+
+// ── Estado
+let cart = {}, selectedService = null, activeCat = 'all', activeTab = 'inicio';
+window.__productos = {}; GOODS.forEach(p => window.__productos[p.id] = p);
+window.__servicios = {}; SERVICES.forEach(s => window.__servicios[s.id] = s);
+
+// Stats hero
+const statsEl = document.getElementById('hero-stats');
+[{ num: GOODS.filter(p=>!p.paused).length, label:'Productos' }, { num: SERVICES.filter(s=>s.activo!==false).length, label:'Servicios' }].forEach(({num, label}) => {
+  const s = document.createElement('div'); s.className = 'hero-stat';
+  s.innerHTML = `<span class="hero-stat-num">${num}</span><span class="hero-stat-label">${label}</span>`;
+  statsEl.appendChild(s);
+});
+
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+  const cartBtn = document.getElementById('cart-float-btn');
+  const svcCta  = document.getElementById('svc-cta');
+  if (tab === 'productos') updateCartUI(); else cartBtn?.classList.remove('visible');
+  if (tab === 'servicios') updateSvcCTA(); else svcCta?.classList.remove('visible');
+}
+
+// Productos
+(function initProductos() {
+  const items = GOODS.filter(p => !p.paused);
+  const catScroll = document.getElementById('cat-scroll');
+  const grid = document.getElementById('product-grid');
+  const countEl = document.getElementById('prod-count');
+  if (countEl) countEl.textContent = `${items.length} productos`;
+  const cats = ['all', ...new Set(items.map(p => p.categoria).filter(Boolean))];
+  cats.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn' + (cat === 'all' ? ' active' : '');
+    btn.textContent = cat === 'all' ? 'Todo' : cat;
+    btn.addEventListener('click', () => {
+      activeCat = cat;
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderProductos(items);
+    });
+    catScroll?.appendChild(btn);
+  });
+  renderProductos(items);
+})();
+
+function renderProductos(items) {
+  const grid = document.getElementById('product-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  const filtered = activeCat === 'all' ? items : items.filter(p => p.categoria === activeCat);
+  filtered.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.style.animationDelay = `${i * 0.04}s`;
+    card.innerHTML = `
+      ${p.imagen ? `<img class="product-img" src="${p.imagen}" alt="${p.nombre}" loading="lazy">` : '<div class="product-img-placeholder">🛍</div>'}
+      <div class="product-body">
+        <div class="product-name">${p.nombre}</div>
+        ${p.descripcion ? `<div class="product-desc">${p.descripcion}</div>` : ''}
+        <div class="product-footer">
+          <span class="product-price">${p.precio_final ? `$${p.precio_final.toLocaleString('es-AR')}` : 'Consultar'}</span>
+          ${p.precio_final ? `<button class="product-add" onclick="addToCart('${p.id}',event)">+</button>` : ''}
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function addToCart(id, e) {
+  e?.stopPropagation();
+  const p = window.__productos[id];
+  if (!p) return;
+  cart[id] ? cart[id].qty++ : (cart[id] = { producto: p, qty: 1 });
+  updateCartUI();
+  const btn = e?.target;
+  if (btn) { btn.textContent = '✓'; setTimeout(() => btn.textContent = '+', 600); }
+}
+
+function updateCartUI() {
+  const total = Object.values(cart).reduce((s, i) => s + i.qty, 0);
+  const badge = document.getElementById('cart-badge');
+  const floatBtn = document.getElementById('cart-float-btn');
+  const floatLbl = document.getElementById('cart-float-label');
+  if (badge) { badge.textContent = total; badge.classList.toggle('visible', total > 0); }
+  if (activeTab === 'productos') {
+    floatBtn?.classList.toggle('visible', total > 0);
+    if (floatLbl) floatLbl.textContent = `Ver pedido (${total})`;
+  }
+}
+
+function openCart() {
+  const container = document.getElementById('cart-items');
+  const totalEl = document.getElementById('cart-total-value');
+  const checkoutBtn = document.getElementById('cart-checkout');
+  if (!container) return;
+  container.innerHTML = '';
+  let total = 0;
+  Object.entries(cart).forEach(([id, { producto: p, qty }]) => {
+    const sub = (p.precio_final || 0) * qty;
+    total += sub;
+    const row = document.createElement('div');
+    row.className = 'cart-item';
+    row.innerHTML = `<div class="cart-item-name">${p.nombre}</div><div class="cart-item-controls"><button class="cart-qty-btn" onclick="changeQty('${id}',-1)">−</button><span class="cart-qty">${qty}</span><button class="cart-qty-btn" onclick="changeQty('${id}',1)">+</button></div><div class="cart-item-price">$${sub.toLocaleString('es-AR')}</div>`;
+    container.appendChild(row);
+  });
+  if (totalEl) totalEl.textContent = `$${total.toLocaleString('es-AR')}`;
+  if (checkoutBtn) {
+    const lines = Object.values(cart).map(({producto:p,qty}) => `• ${p.nombre} x${qty} — $${(p.precio_final*qty).toLocaleString('es-AR')}`);
+    checkoutBtn.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola ${NOMBRE}! Quiero hacer este pedido:\n\n${lines.join('\n')}\n\nTotal: $${total.toLocaleString('es-AR')}`)}`;
+  }
+  document.getElementById('cart-sheet')?.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCart() { document.getElementById('cart-sheet')?.classList.remove('open'); document.body.style.overflow = ''; }
+
+function changeQty(id, delta) {
+  if (!cart[id]) return;
+  cart[id].qty += delta;
+  if (cart[id].qty <= 0) delete cart[id];
+  openCart();
+  updateCartUI();
+}
+
+// Servicios
+(function initServicios() {
+  const list = document.getElementById('services-list');
+  const countEl = document.getElementById('svc-count');
+  const items = SERVICES.filter(s => s.activo !== false);
+  if (countEl) countEl.textContent = `${items.length} servicios`;
+  const mLabels = { presencial:'En el local', a_domicilio:'A domicilio', remoto:'Online' };
+  const dLabels = { inmediata:'Sin turno', a_coordinar:'Con turno' };
+  items.forEach((svc, i) => {
+    const card = document.createElement('div');
+    card.className = 'service-card';
+    card.style.animationDelay = `${i * 0.06}s`;
+    card.dataset.id = svc.id;
+    const mods = (Array.isArray(svc.modalidad)?svc.modalidad:[svc.modalidad]).map(m=>mLabels[m]||m).filter(Boolean);
+    const disp = dLabels[svc.disponibilidad] || svc.disponibilidad || '';
+    const precioHTML = svc.precio?.tipo==='fijo' ? `<span class="service-price">$${svc.precio.valor.toLocaleString('es-AR')}</span>` : `<span class="service-price consultar">A consultar</span>`;
+    card.innerHTML = `
+      ${svc.imagen ? `<img class="service-img" src="${svc.imagen}" alt="${svc.nombre}" loading="lazy">` : ''}
+      <div class="service-body">
+        <div class="service-header"><div class="service-name">${svc.nombre}</div>${precioHTML}</div>
+        ${svc.descripcion ? `<p class="service-desc">${svc.descripcion}</p>` : ''}
+        <div class="service-tags">
+          ${mods.map(m=>`<span class="service-tag tag-modalidad">${m}</span>`).join('')}
+          ${disp?`<span class="service-tag tag-disp">${disp}</span>`:''}
+        </div>
+        <div class="service-select-row">
+          <span style="font-size:12px;color:var(--ink-mute)">Tocá para consultar</span>
+          <button class="service-select-btn" onclick="selectService('${svc.id}',event)">Consultar</button>
+        </div>
+      </div>`;
+    list?.appendChild(card);
+  });
+})();
+
+function selectService(id, e) {
+  e?.stopPropagation();
+  const svc = window.__servicios[id];
+  const isSame = selectedService?.id === id;
+  selectedService = isSame ? null : svc;
+  document.querySelectorAll('.service-card').forEach(c => {
+    const sel = c.dataset.id === id && !isSame;
+    c.classList.toggle('selected', sel);
+    const btn = c.querySelector('.service-select-btn');
+    if (btn) btn.textContent = sel ? 'Seleccionado ✓' : 'Consultar';
+  });
+  updateSvcCTA();
+}
+
+function updateSvcCTA() {
+  const cta = document.getElementById('svc-cta');
+  const btn = document.getElementById('svc-cta-btn');
+  const lbl = document.getElementById('svc-cta-label');
+  if (!cta || !btn) return;
+  if (activeTab !== 'servicios') { cta.classList.remove('visible'); return; }
+  const svc = selectedService;
+  const msg = svc ? `Hola ${NOMBRE}! Quiero consultar por: *${svc.nombre}*. ¿Me pueden dar un turno?` : `Hola ${NOMBRE}! Vi sus servicios y quiero consultar.`;
+  btn.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
+  if (lbl) lbl.textContent = svc ? `Consultar por ${svc.nombre}` : 'Consultar por WhatsApp';
+  cta.classList.add('visible');
+}
+
+// Info
+(function initInfo() {
+  const container = document.getElementById('horarios-rows');
+  const dias = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
+  const labels = {lunes:'Lunes',martes:'Martes',miercoles:'Miércoles',jueves:'Jueves',viernes:'Viernes',sabado:'Sábado',domingo:'Domingo'};
+  const hoy = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'][new Date().getDay()];
+  dias.forEach(dia => {
+    const h = PROFILE.horarios[dia];
+    if (!h) return;
+    const row = document.createElement('div'); row.className = 'horario-row';
+    const diaEl = document.createElement('div');
+    diaEl.className = 'horario-dia'+(dia===hoy?' hoy':'');
+    diaEl.textContent = labels[dia]+(dia===hoy?' ·':'');
+    const valEl = document.createElement('div'); valEl.className = 'horario-valor';
+    if (h.closed) valEl.innerHTML = '<span class="horario-cerrado">Cerrado</span>';
+    else { const p=[]; if(h.morning?.enabled)p.push(`${h.morning.open}–${h.morning.close}`); if(h.afternoon?.enabled)p.push(`${h.afternoon.open}–${h.afternoon.close}`); valEl.textContent=p.join(' / '); }
+    row.appendChild(diaEl); row.appendChild(valEl); container?.appendChild(row);
+  });
+
+  const cRows = document.getElementById('contact-rows');
+  const iconPin=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+  const iconPhone=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12 19.79 19.79 0 0 1 1.08 3.4 2 2 0 0 1 3.07 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+  const iconMail=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`;
+  const iconInsta=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>`;
+  [
+    {icon:iconPin,   label:PROFILE.ubicacion?.zona},
+    {icon:iconPhone, label:PROFILE.contacto?.whatsapp?`+${PROFILE.contacto.whatsapp}`:null},
+    {icon:iconMail,  label:PROFILE.contacto?.email},
+    {icon:iconInsta, label:PROFILE.contacto?.instagram},
+  ].forEach(({icon,label}) => {
+    if (!label) return;
+    const row = document.createElement('div'); row.className='contact-row';
+    row.innerHTML=`<div class="contact-icon">${icon}</div><span>${label}</span>`;
+    cRows?.appendChild(row);
+  });
+
+  const gSection = document.getElementById('gallery-section');
+  const gGrid = document.getElementById('gallery-grid');
+  if (PROFILE.galeria?.length && gSection && gGrid) {
+    gSection.style.display = 'block';
+    PROFILE.galeria.forEach((url,i) => {
+      const item = document.createElement('div'); item.className='gallery-item';
+      item.innerHTML=`<img src="${url}" alt="Foto ${i+1}" loading="lazy">`;
+      item.addEventListener('click',()=>openLightbox(url));
+      gGrid.appendChild(item);
+    });
+  }
+})();
+
+function openLightbox(url) {
+  const lb=document.getElementById('lightbox');
+  const img=document.getElementById('lightbox-img');
+  img.src=url; lb.classList.add('open'); document.body.style.overflow='hidden';
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); document.body.style.overflow=''; }
+</script>
+</body>
+</html>
