@@ -1,32 +1,35 @@
 {
-  "template_id": "S1_SERVICE_PROFILE",
+  "template_id": "S1_ServiceProfile",
   "name": "Perfil de Servicios",
   "version": "1.0.0",
   "tier": "S1",
   "type": "service_profile",
   "status": "stable",
   "description": "Mini app para prestadores de servicios. Muestra servicios con selección, galería de trabajos realizados, horarios y botón de contacto por WhatsApp.",
-  "ideal_for": ["plomeros", "electricistas", "manicuras", "peluqueros", "profesores particulares", "fotógrafos", "albañiles", "pintores"],
+  "ideal_for": [
+    "plomeros",
+    "electricistas",
+    "manicuras",
+    "peluqueros",
+    "profesores particulares",
+    "fotógrafos",
+    "albañiles",
+    "pintores"
+  ],
   "supports": {
     "services": true,
     "gallery": true,
     "horarios": true,
-    "contacto": true,
     "cart": false,
     "search": false,
-    "variants": false,
     "images": true
   },
-  "placeholders": {
-    "NOMBRE_COMERCIO": "Nombre del prestador o marca",
-    "WHATSAPP": "Número WhatsApp solo dígitos",
-    "SERVICES": "Array de servicios del prestador",
-    "PROFILE": "Objeto con datos del perfil (ubicacion, contacto, horarios, galeria)"
-  },
-  "limitations": ["Sin pagos integrados", "Galería requiere URLs externas de imágenes"],
+  "limitations": [
+    "Sin pagos integrados",
+    "Galería requiere URLs externas"
+  ],
   "visual": {
-    "preview_html": "previews/preview.html",
-    "thumbnail": "previews/thumbnail.png"
+    "preview_html": "previews/preview.html"
   },
   "license": "IndiceIA Commercial Template"
 }
