@@ -1,0 +1,35 @@
+{
+  "template_id": "A1_ComboProfile",
+  "name": "Perfil Combo",
+  "version": "1.0.0",
+  "tier": "A1",
+  "type": "combo_profile",
+  "status": "stable",
+  "description": "Mini app con navegación por tabs para negocios que combinan productos y servicios. Catálogo con carrito, servicios con consulta, galería, horarios y contacto.",
+  "ideal_for": [
+    "ópticas",
+    "talleres mecánicos",
+    "estéticas",
+    "veterinarias",
+    "ferreterías con instalación",
+    "negocios con productos y servicios"
+  ],
+  "supports": {
+    "products": true,
+    "services": true,
+    "gallery": true,
+    "horarios": true,
+    "cart": true,
+    "search": false,
+    "images": true,
+    "categories": true
+  },
+  "limitations": [
+    "Sin pagos integrados",
+    "Galería requiere URLs externas"
+  ],
+  "visual": {
+    "preview_html": "previews/preview.html"
+  },
+  "license": "IndiceIA Commercial Template"
+}
