@@ -137,10 +137,34 @@ function buildCard(item) {
 
 // ── CARRITO ──────────────────────────────────────────────────
 
+function getCartKey(item) {
+  // Si tiene id propio lo usa. Si no (ej: pizzas con variantes),
+  // genera un key único combinando nombre + tamaño para evitar
+  // que items distintos se sobreescriban en el carrito.
+  return item.id || `${item.nombre}__${item.atributos?.tamaño || ''}`;
+}
+
+function getCartNombre(item) {
+  const tamaño = item.atributos?.tamaño;
+  // Muestra tamaño solo si es relevante (no "Unidad" ni "Plato" ni "Porción")
+  const ignorar = ['Unidad', 'Plato', 'Porción'];
+  if (tamaño && !ignorar.includes(tamaño)) {
+    return `${item.nombre} (${tamaño})`;
+  }
+  return item.nombre;
+}
+
 function addToCart(item) {
-  const key = item.id;
-  if (cart[key]) cart[key].qty++;
-  else cart[key] = { nombre: item.nombre, precio: item.precio_final ?? 0, qty: 1 };
+  const key = getCartKey(item);
+  if (cart[key]) {
+    cart[key].qty++;
+  } else {
+    cart[key] = {
+      nombre: getCartNombre(item),
+      precio: item.precio_final ?? 0,
+      qty: 1
+    };
+  }
   updateCartCount();
   showToast(`${item.nombre} agregado`);
 }
@@ -166,7 +190,6 @@ function updateCartCount() {
 }
 
 function openCart() {
-  // Restaurar estado visual del toggle
   document.getElementById('opt-retiro').classList.toggle('active', !isDelivery);
   document.getElementById('opt-delivery').classList.toggle('active', isDelivery);
   document.getElementById('delivery-address').style.display = isDelivery ? 'block' : 'none';
@@ -216,7 +239,6 @@ function renderCartItems() {
   container.innerHTML = '';
   let subtotal = 0;
 
-  // Filas de productos
   items.forEach(({ id, nombre, precio, qty }) => {
     const s = precio * qty;
     subtotal += s;
@@ -235,7 +257,6 @@ function renderCartItems() {
     container.appendChild(row);
   });
 
-  // Subtotal — sin color naranja
   const subtotalRow = document.createElement('div');
   subtotalRow.className = 'cart-row';
   subtotalRow.style.borderTop = '1px solid #e5e7eb';
@@ -246,7 +267,6 @@ function renderCartItems() {
   `;
   container.appendChild(subtotalRow);
 
-  // Envío
   let total = subtotal;
   if (isDelivery) {
     const costVal = getDeliveryCost();
@@ -267,7 +287,6 @@ function renderCartItems() {
     container.appendChild(deliveryRow);
   }
 
-  // Total
   const totalLabel = isDelivery && getDeliveryCost() === null
     ? 'Total (+ envío a convenir)'
     : 'Total';
